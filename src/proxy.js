@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
  * Proxy middleware for Next.js 16+
  * Only applies to API routes to avoid blocking page requests
  */
-export function middleware(request) {
+export function proxy(request) {
   // Pass through all requests without blocking
   return NextResponse.next();
 }
