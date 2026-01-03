@@ -15,17 +15,17 @@ export const FavoriteProvider = ({ children }) => {
   const {
     data: getAllFavoriteFilmsData,
     isLoading: isGetAllFavoriteFilmsLoading,
-  } = useGetAllFavoriteFilms(page);
+  } = useGetAllFavoriteFilms({ enabled: filterType === "all" });
 
   const {
     data: getAllFavoriteMoviesData,
     isLoading: isGetAllFavoriteMoviesLoading,
-  } = useGetAllFavoriteMovies({page, enabled: filterType === "movie"});
+  } = useGetAllFavoriteMovies({ enabled: filterType === "movie" });
 
   const {
     data: getAllFavoriteSeriesData,
     isLoading: isGetAllFavoriteSeriesLoading,
-  } = useGetAllFavoriteSeries({enabled: filterType === "series"});
+  } = useGetAllFavoriteSeries({ enabled: filterType === "series" });
 
   const { data: getTotalFavoriteData, isLoading: isTotalFavoriteLoading } =
     useGetTotalFilmsFavorite();
@@ -55,13 +55,16 @@ export const FavoriteProvider = ({ children }) => {
   return (
     <FavoriteContext.Provider
       value={{
+        filterType,
+        setPage,
+        page,
+
         dataFilms,
         getTotalFavoriteData,
+
         isLoading,
+
         handleFilter,
-        filterType,
-        page,
-        setPage,
       }}
     >
       {children}
