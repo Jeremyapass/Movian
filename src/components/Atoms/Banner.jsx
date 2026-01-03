@@ -2,7 +2,7 @@
 import { fonts } from "@/fonts/fonts";
 import React, { useState, useRef, useMemo, useEffect } from "react";
 import PageButton from "./buttons/PageButton";
-import AddWatchListButton from "./buttons/AddWatchListButton";
+import AddWatchListButton from "./buttons/AddWatchListFilmButton";
 import clsx from "clsx";
 import gsap from "gsap";
 import BannerSkeleton from "../Skeletons/BannerSkeleton";
@@ -15,7 +15,7 @@ const Banner = ({ data }) => {
 
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  const containerRef = useRef(null); 
+  const containerRef = useRef(null);
   const bannerRef = useRef(null);
   const animating = useRef(false);
   const isHovering = useRef(false);
@@ -28,7 +28,6 @@ const Banner = ({ data }) => {
       setCurrentIndex(0);
     }
   }, [bannerData.length]);
-
 
   const animateSlide = (direction) => {
     if (animating.current || bannerData.length === 0) return;
@@ -168,8 +167,8 @@ const Banner = ({ data }) => {
 
   return (
     <div
-      ref={containerRef} 
-      onTouchStart={onTouchStart} 
+      ref={containerRef}
+      onTouchStart={onTouchStart}
       onTouchEnd={onTouchEnd}
       className="relative w-full flex flex-col gap-4 items-center justify-center overflow-hidden"
     >
@@ -189,7 +188,6 @@ const Banner = ({ data }) => {
           }
         }}
       >
-        
         <div className="flex justify-between items-center relative z-20">
           <div
             className={`bg-[linear-gradient(120deg,#FF3B6A_0%,#FF6F91_100%)]
@@ -202,7 +200,6 @@ const Banner = ({ data }) => {
           {/* <AddWatchListButton className="bg-[#2A2A2A66]" /> */}
         </div>
 
-        
         <div className="absolute inset-0 z-10 flex justify-between pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500">
           <div
             className="h-full w-[15%] flex items-center pl-[26px] pointer-events-auto"
@@ -219,7 +216,6 @@ const Banner = ({ data }) => {
           </div>
         </div>
 
-       
         <div className="flex flex-col gap-2 relative z-20">
           <p className="text-[16px]">
             {current?.release_date || current?.first_air_date || "Unknown Date"}
@@ -231,7 +227,6 @@ const Banner = ({ data }) => {
         </div>
       </div>
 
-     
       <div className="gap-[8px] flex">
         {bannerData.map((_, index) => (
           <button
