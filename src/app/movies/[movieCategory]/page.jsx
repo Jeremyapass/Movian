@@ -1,10 +1,10 @@
 "use client";
 import FilmLayoutFull from "@/components/Organism/layouts/FilmLayoutFull";
-import { useMovies } from "@/provider/moviesProvider";
+import { MoviesProvider, useMovies } from "@/provider/moviesProvider";
 import { useParams } from "next/navigation";
 import React from "react";
 
-const MovieCategoryPage = () => {
+const PageContent = () => {
   const { movieCategory } = useParams();
   const {
     nowPlayingData,
@@ -18,10 +18,10 @@ const MovieCategoryPage = () => {
   } = useMovies();
 
   const categoryMap = {
-    "now-playing": nowPlayingData,
-    popular: popularData,
-    upcoming: upcomingData,
-    "top-rated": topRatedData,
+    "now-playing": nowPlayingData?.results,
+    popular: popularData?.results,
+    upcoming: upcomingData?.results,
+    "top-rated": topRatedData?.results,
   };
 
   const loadingMap = {
@@ -37,7 +37,15 @@ const MovieCategoryPage = () => {
   // console.log('now playing data', nowPlayingData)
 
   return (
-    <FilmLayoutFull data={selectedData} isLoading={isLoading} type="movies" />
+    <FilmLayoutFull data={selectedData} isLoading={isLoading} type="movie" />
+  );
+};
+
+const MovieCategoryPage = () => {
+  return (
+    <MoviesProvider>
+      <PageContent />
+    </MoviesProvider>
   );
 };
 
