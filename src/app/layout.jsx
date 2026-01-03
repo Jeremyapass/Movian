@@ -1,7 +1,9 @@
+import Navbar from "@/components/Molecules/Navbar";
 import "./globals.css";
 import TanstackProvider from "@/provider/tanstackProvider";
+import Footer from "@/components/Molecules/Footer";
 import { fonts } from "@/fonts/fonts";
-import ClientLayout from "@/components/ClientLayout";
+import { RootProvider } from "@/provider/rootProvider";
 
 export const metadata = {
   title: "Movian",
@@ -15,7 +17,14 @@ export default function RootLayout({ children }) {
         className={`antialiased bg-[#0D0D0D] min-h-screen text-white ${fonts.satoshi.className}`}
       >
         <TanstackProvider>
-          <ClientLayout>{children}</ClientLayout>
+          <RootProvider>
+            <main className="flex flex-col items-center justify-center pt-[134px] px-[64px] w-full">
+              <Navbar />
+              {children}
+            </main>
+          </RootProvider>
+
+          <Footer />
         </TanstackProvider>
       </body>
     </html>
