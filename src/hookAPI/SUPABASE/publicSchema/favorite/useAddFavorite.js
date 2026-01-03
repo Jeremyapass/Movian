@@ -17,8 +17,8 @@ const AddFavoriteMovies = async (params) => {
     .upsert(
       {
         tmdb_movie_id: tmdbMovieId,
-        name,
-        type,
+        name: name,
+        type: type,
         poster_path: posterPath,
         date_release: dateRelease,
       },
@@ -32,7 +32,7 @@ const AddFavoriteMovies = async (params) => {
   const { error: favError } = await supabase.from("favorite_films").insert({
     user_id: user.id,
     movie_cache_id: movieCache.id,
-    type : type,
+    type: type,
   });
 
   if (favError && favError.code !== "23505") throw favError;
@@ -44,7 +44,12 @@ export const useAddFavoriteMovies = () => {
   return useMutation({
     mutationFn: AddFavoriteMovies,
     onSuccess: () => {
-      queryClient.invalidateQueries(["get-favorite-movies"]);
+      queryClient.invalidateQueries({
+        queryKey: ["get-all-favorite"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["get-total-favorite"],
+      });
     },
   });
 };

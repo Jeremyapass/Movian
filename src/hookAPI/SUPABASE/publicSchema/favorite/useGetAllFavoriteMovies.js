@@ -26,17 +26,15 @@ const GetAllFavoriteMovies = async ({ page, tmdbId } = {}) => {
         date_release
       )
     `,
-      { count: page ? "exact" : undefined } // count hanya kalau paginate
+      { count: page ? "exact" : undefined }
     )
     .eq("user_id", user.id)
     .eq("movie_cache.type", "movie");
 
-  // ✅ Safe: jangan kirim undefined ke bigint
   if (tmdbId !== undefined && tmdbId !== null) {
     query = query.eq("movie_cache.tmdb_movie_id", tmdbId);
   }
 
-  // 🔥 Pagination hanya kalau page ada
   if (page !== undefined) {
     const from = (page - 1) * PAGE_SIZE;
     const to = from + PAGE_SIZE - 1;
@@ -46,15 +44,12 @@ const GetAllFavoriteMovies = async ({ page, tmdbId } = {}) => {
   const { data, error, count } = await query;
   if (error) throw error;
 
-  // 🔥 Mode tanpa pagination
   if (page === undefined) {
     return {
       data,
       totalItems: data?.length ?? 0,
     };
   }
-
-  // 🔥 Mode pagination
   return {
     data,
     currentPage: page,
@@ -64,11 +59,15 @@ const GetAllFavoriteMovies = async ({ page, tmdbId } = {}) => {
 };
 
 // ✅ Hook pakai object parameter
-export const useGetAllFavoriteMovies = ({ page, tmdbId, enabled = false } = {}) =>
+//TMDBID di sini opsional, dipakai untuk cek apakah film tertentu ada di favorite (ini v2 aja biar bisa ditampilin di Main Page)
+export const useGetAllFavoriteMovies = ({
+  page,
+  tmdbId,
+  enabled = false,
+} = {}) =>
   useQuery({
-    queryKey: ["getAllFavoriteMovies", page, tmdbId],
+    queryKey: ["get-all-favorite", "movies", page, tmdbId],
     queryFn: () => GetAllFavoriteMovies({ page, tmdbId }),
-    staleTime: 1000 * 60 * 5,
     keepPreviousData: true,
     enabled,
   });

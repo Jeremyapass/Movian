@@ -26,11 +26,10 @@ const GetAllFavoriteFilms = async ({ page }) => {
         date_release
       )
     `,
-      { count: page ? "exact" : undefined } // 🔥 count hanya kalau paginate
+      { count: page ? "exact" : undefined }
     )
     .eq("user_id", user.id);
 
-  // 🔥 PAGINATION OPTIONAL
   if (page !== undefined) {
     const from = (page - 1) * PAGE_SIZE;
     const to = from + PAGE_SIZE - 1;
@@ -41,7 +40,6 @@ const GetAllFavoriteFilms = async ({ page }) => {
 
   if (error) throw error;
 
-  // 🔥 MODE TANPA PAGINATION
   if (page === undefined) {
     return {
       data,
@@ -58,11 +56,10 @@ const GetAllFavoriteFilms = async ({ page }) => {
   };
 };
 
-export const useGetAllFavoriteFilms = (page, enabled = true) =>
+export const useGetAllFavoriteFilms = ({page, enabled = true}) =>
   useQuery({
-    queryKey: ["getAllFavoriteFilms", page],
+    queryKey: ["get-all-favorite", "films", page],
     queryFn: () => GetAllFavoriteFilms({ page }),
-    staleTime: 1000 * 60 * 5,
     keepPreviousData: true,
-    enabled, // 🔥
+    enabled,
   });

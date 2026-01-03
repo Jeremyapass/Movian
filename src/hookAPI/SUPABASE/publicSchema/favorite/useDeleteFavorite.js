@@ -10,7 +10,6 @@ const DeleteFavoriteMovies = async (tmdbMovieId) => {
   if (authError) throw authError;
   if (!user?.id) throw new Error("Not authenticated");
 
-  // 1️⃣ ambil movie_cache_id
   const { data: movieCache, error: cacheError } = await supabase
     .from("movie_cache")
     .select("id")
@@ -19,7 +18,6 @@ const DeleteFavoriteMovies = async (tmdbMovieId) => {
 
   if (cacheError) throw cacheError;
 
-  // 2️⃣ delete favorite
   const { error } = await supabase
     .from("favorite_films")
     .delete()
@@ -35,7 +33,13 @@ export const useDeleteFavoriteMovies = () => {
   return useMutation({
     mutationFn: DeleteFavoriteMovies,
     onSuccess: () => {
-      queryClient.invalidateQueries(["get-favorite-movies"]);
+      // Hanya invalidate query yang benar-benar perlu di-update
+      queryClient.invalidateQueries({
+        queryKey: ["get-all-favorite"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["get-total-favorite"],
+      });
     },
   });
 };

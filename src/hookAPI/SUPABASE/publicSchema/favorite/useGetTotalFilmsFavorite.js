@@ -1,8 +1,6 @@
 import { supabase } from "@/lib/supabaseClient";
 import { useQuery } from "@tanstack/react-query";
 
-const PAGE_SIZE = 30;
-
 const GetTotalFilmsFavorite = async () => {
   const {
     data: { user },
@@ -21,10 +19,9 @@ const GetTotalFilmsFavorite = async () => {
   return data?.[0] ?? { totalMovies: 0, totalSeries: 0 };
 };
 
-export const useGetTotalFilmsFavorite = (page = 1) =>
+export const useGetTotalFilmsFavorite = () =>
   useQuery({
-    queryKey: ["getTotalFilmsFavorite", page],
-    queryFn: () => GetTotalFilmsFavorite({ page }),
-    staleTime: 1000 * 60 * 5,
+    queryKey: ["get-total-favorite", "films"],
+    queryFn: () => GetTotalFilmsFavorite(),
     keepPreviousData: true,
   });
