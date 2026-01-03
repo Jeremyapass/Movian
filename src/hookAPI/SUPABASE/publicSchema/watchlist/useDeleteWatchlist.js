@@ -1,30 +1,30 @@
 import { supabase } from "@/lib/supabaseClient";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-//BELUM YA. TAMBAHIN PARAMS NYA NANTI, TRUS KASIH KE GPT
-const DeleteWatchlist = async () => {
+const DeleteWatchlist = async (watchlistId) => {
   const {
     data: { user },
     error: authError,
   } = await supabase.auth.getUser();
 
   if (authError) throw authError;
-  if (!user?.id) return null;
+  if (!user?.id) throw new Error("Not authenticated");
 
-  let query = supabase
-    .from("favorite_movie")
-    .select("tmdb_movie_id, type")
-    .eq("user_id", user.id);
+  const { error } = await supabase
+    .from("watchlist")
+    .delete()
+    .eq("user_id", user.id)
+    .eq("id", watchlistId);
 
-  const { data, error } = await query;
   if (error) throw error;
-
-  return data;
 };
 
 export const useDeleteWatchlist = () => {
-  return useQuery({
-    queryKey: ["delete-watchlist"],
-    queryFn: () => DeleteWatchlist(),
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: DeleteWatchlist,
+    onSuccess: () => {
+      queryClient.invalidateQueries(["get-all-watchlist"]);
+    },
   });
 };

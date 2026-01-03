@@ -1,30 +1,41 @@
 import { supabase } from "@/lib/supabaseClient";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-//BELUM YA. TAMBAHIN PARAMS NYA NANTI, TRUS KASIH KE GPT
-const AddWatchlist = async () => {
+const AddWatchlist = async ({ name, description, is_public, picture_path }) => {
   const {
     data: { user },
     error: authError,
   } = await supabase.auth.getUser();
 
   if (authError) throw authError;
-  if (!user?.id) return null;
+  if (!user?.id) throw new Error("User not authenticated");
 
-  let query = supabase
-    .from("favorite_movie")
-    .select("tmdb_movie_id, type")
-    .eq("user_id", user.id);
+  const { data, error } = await supabase
+    .from("watchlist")
+    .insert({
+      user_id: user.id,
+      name: name,
+      description: description,
+      is_public: is_public,
+      picture_path: picture_path,
+    })
+    .select()
+    .single();
 
-  const { data, error } = await query;
   if (error) throw error;
 
   return data;
 };
 
 export const useAddWatchlist = () => {
-  return useQuery({
-    queryKey: ["add-watchlist"],
-    queryFn: () => AddWatchlist(),
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: AddWatchlist,
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["get-all-watchlist"],
+      });
+    },
   });
 };
