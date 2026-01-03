@@ -5,34 +5,13 @@ import { fonts } from "@/fonts/fonts";
 import React, { useRef } from "react";
 import gsap from "gsap";
 import { useRouter } from "next/navigation";
-import Card from "@/components/Atoms/cards/Card";
+import WatchListCard from "@/components/Atoms/cards/WatchListCard";
 
-const WatchlistLayout = ({
-  title,
-  data = [],
-  onViewAllClick,
-  isLoading,
-  type,
-}) => {
+const WatchlistCarouselLayout = ({ title, data, isLoading }) => {
   const scrollRef = useRef(null);
   const route = useRouter();
 
   const hasData = data && data.length > 0;
-
-  const mediaConfig = {
-    movies: {
-      name: (d) => d.title,
-      date: (d) => d.release_date,
-      path: (id) => `/movies/movie-detail/${id}`,
-    },
-    series: {
-      name: (d) => d.name,
-      date: (d) => d.first_air_date,
-      path: (id) => `/series/series-detail/${id}`,
-    },
-  };
-
-  const config = mediaConfig[type];
 
   // ===== AMAN =====
   const getCardWidth = () => {
@@ -97,7 +76,7 @@ const WatchlistLayout = ({
           <div className="flex gap-[16px] items-center">
             <div
               className={`${fonts.clash.className} cursor-pointer inline-block transition-all duration-200 text-[24px] font-semibold leading-6 border-b-[2px] border-transparent hover:border-white`}
-              onClick={onViewAllClick}
+              onClick={() => route.push("/watchlist")}
             >
               Lihat semua
             </div>
@@ -114,7 +93,7 @@ const WatchlistLayout = ({
       {isLoading ? (
         <div className="flex gap-[24px] w-full overflow-x-auto no-scrollbar">
           {[...Array(6)].map((_, i) => (
-            <Card key={i} isLoading />
+            <WatchListCard key={i} />
           ))}
         </div>
       ) : !hasData ? (
@@ -133,13 +112,12 @@ const WatchlistLayout = ({
           ref={scrollRef}
           className="flex gap-[24px] w-full overflow-x-auto no-scrollbar"
         >
-          {data.map((item, index) => (
-            <Card
-              key={item.id ?? index}
-              filmName={config.name(item)}
-              filmReleaseDate={config.date(item)}
-              filmImages={`https://image.tmdb.org/t/p/w500${item.poster_path}`}
-              onClick={() => route.push(config.path(item.id))}
+          {data.map((item) => (
+            <WatchListCard
+              key={item.id}
+              data={item}
+              layout="carousel"
+              onClick={() => route.push(`/watchlist/${item.id}`)}
             />
           ))}
         </div>
@@ -148,4 +126,4 @@ const WatchlistLayout = ({
   );
 };
 
-export default WatchlistLayout;
+export default WatchlistCarouselLayout;

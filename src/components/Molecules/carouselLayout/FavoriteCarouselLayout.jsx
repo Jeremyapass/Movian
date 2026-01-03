@@ -7,54 +7,25 @@ import gsap from "gsap";
 import { useRouter } from "next/navigation";
 import Card from "@/components/Atoms/cards/Card";
 
-const FavoriteCarouselLayout = ({
-  title,
-  data = [],
-  onViewAllClick,
-  isLoading,
-  type,
-}) => {
+const FavoriteCarouselLayout = ({ title, data, isLoading }) => {
   const scrollRef = useRef(null);
   const route = useRouter();
 
-  const hasData = data && data.length > 0;
-
-  const mediaConfig = {
-    movies: {
-      name: (d) => d.title,
-      date: (d) => d.release_date,
-      path: (id) => `/movies/movie-detail/${id}`,
-    },
-    series: {
-      name: (d) => d.name,
-      date: (d) => d.first_air_date,
-      path: (id) => `/series/series-detail/${id}`,
-    },
-  };
-
-  const config = mediaConfig[type];
-
-  // ===== AMAN =====
   const getCardWidth = () => {
     const first = scrollRef.current?.children?.[0];
     if (!first) return 0;
     return 3 * (first.offsetWidth + 24);
   };
 
-  // ===== NEXT =====
   const handleNext = () => {
     if (!scrollRef.current) return;
 
     const wrapper = scrollRef.current;
     const cardWidth = getCardWidth();
     const maxScroll = wrapper.scrollWidth - wrapper.clientWidth;
-    const threshold = 60;
 
     let target = wrapper.scrollLeft + cardWidth;
-
-    if (wrapper.scrollLeft + threshold >= maxScroll) {
-      target = 0;
-    }
+    if (target >= maxScroll - 60) target = 0;
 
     gsap.to(wrapper, {
       scrollLeft: target,
@@ -63,20 +34,15 @@ const FavoriteCarouselLayout = ({
     });
   };
 
-  // ===== PREV =====
   const handlePrev = () => {
     if (!scrollRef.current) return;
 
     const wrapper = scrollRef.current;
     const cardWidth = getCardWidth();
     const maxScroll = wrapper.scrollWidth - wrapper.clientWidth;
-    const threshold = 60;
 
     let target = wrapper.scrollLeft - cardWidth;
-
-    if (wrapper.scrollLeft <= threshold) {
-      target = maxScroll;
-    }
+    if (target <= 60) target = maxScroll;
 
     gsap.to(wrapper, {
       scrollLeft: target,
@@ -85,19 +51,21 @@ const FavoriteCarouselLayout = ({
     });
   };
 
+  const hasData = data?.data?.length > 0;
+
   return (
     <div className="w-full flex flex-col gap-[24px]">
-      {/* ===== HEADER ===== */}
+      {/* HEADER */}
       <div className="flex justify-between items-center">
         <p className={`${fonts.clash.className} text-3xl font-semibold`}>
           {title}
         </p>
 
-        {!isLoading && hasData && (
+        {hasData && (
           <div className="flex gap-[16px] items-center">
             <div
               className={`${fonts.clash.className} cursor-pointer inline-block transition-all duration-200 text-[24px] font-semibold leading-6 border-b-[2px] border-transparent hover:border-white`}
-              onClick={onViewAllClick}
+              onClick={() => route.push("/favorite")}
             >
               Lihat semua
             </div>
@@ -110,7 +78,7 @@ const FavoriteCarouselLayout = ({
         )}
       </div>
 
-      {/* ===== CONTENT ===== */}
+      {/* CONTENT */}
       {isLoading ? (
         <div className="flex gap-[24px] w-full overflow-x-auto no-scrollbar">
           {[...Array(6)].map((_, i) => (
@@ -133,15 +101,25 @@ const FavoriteCarouselLayout = ({
           ref={scrollRef}
           className="flex gap-[24px] w-full overflow-x-auto no-scrollbar"
         >
-          {data.map((item, index) => (
-            <Card
-              key={item.id ?? index}
-              filmName={config.name(item)}
-              filmReleaseDate={config.date(item)}
-              filmImages={`https://image.tmdb.org/t/p/w500${item.poster_path}`}
-              onClick={() => route.push(config.path(item.id))}
-            />
-          ))}
+          {data.data.map((item) => {
+            const isMovie = item.movie_cache.type === "movie";
+
+            return (
+              <Card
+                key={item.id}
+                filmName={item.movie_cache.name}
+                filmReleaseDate={item.movie_cache.date_release}
+                filmImages={`https://image.tmdb.org/t/p/w500${item.movie_cache.poster_path}`}
+                onClick={() =>
+                  route.push(
+                    isMovie
+                      ? `/movies/movie-detail/${item.movie_cache.tmdb_movie_id}`
+                      : `/series/series-detail/${item.movie_cache.tmdb_movie_id}`
+                  )
+                }
+              />
+            );
+          })}
         </div>
       )}
     </div>
