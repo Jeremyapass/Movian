@@ -50,29 +50,22 @@ const AddFavButton = ({
   const serverActive = !!serverFavorite;
   const [uiActive, setUiActive] = useState(serverActive);
 
-  // 🔄 Sync UI ke server saat favorites berubah
   useEffect(() => {
     if (!uiLoading) {
       setUiActive(serverActive);
     }
   }, [serverActive, uiLoading]);
 
-  // ✨ GSAP animation
   useEffect(() => {
     if (!starRef.current || uiLoading) return;
 
     gsap.fromTo(
       starRef.current,
-      { scale: 0.6 },
-      {
-        scale: 1,
-        duration: 0.45,
-        ease: "back.out(2)",
-      }
+      { scale: 0.6, opacity: 0.5 },
+      { scale: 1, opacity: 1, duration: 0.25, ease: "back.out(2)" }
     );
   }, [uiActive, uiLoading]);
 
-  // 🔥 Handle click
   const handleClick = (e) => {
     e.stopPropagation();
     if (favLoading || uiLoading) return;

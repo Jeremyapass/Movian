@@ -6,7 +6,6 @@ import CardSkeleton from "@/components/Skeletons/CardSkeleton";
 import clsx from "clsx";
 import AddFavButton from "../buttons/AddFavButton";
 
-
 const Card = ({
   filmName,
   filmReleaseDate,
@@ -58,8 +57,9 @@ const Card = ({
               ? "(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
               : "270px"
           }
+          priority={isLayoutFull} // ✅ INI
+          loading={isLayoutFull ? "eager" : "lazy"} // ✅
           className="object-cover transition-all duration-300 w-full h-full"
-          loading="lazy"
         />
 
         <div className="absolute rounded-[12px]  inset-0 bg-transparent group-hover:bg-[#2A2A2A66]/40 transition-all duration-300" />
