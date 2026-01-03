@@ -1,6 +1,5 @@
 "use client";
-
-import AddWatchListButton from "@/components/Atoms/buttons/AddWatchlistButton";
+import AddWatchListButton from "@/components/Atoms/buttons/AddWatchListButton";
 import Card from "@/components/Atoms/cards/Card";
 import WatchListCard from "@/components/Atoms/cards/WatchListCard";
 import Pagination from "@/components/Atoms/Pagination";
