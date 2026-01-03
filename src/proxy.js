@@ -1,18 +1,18 @@
+import { NextResponse } from "next/server";
+
 /**
- * Empty middleware function to prevent project errors
- * @param {Object} req - Express request object
- * @param {Object} res - Express response object
- * @param {Function} next - Express next middleware function
+ * Proxy middleware for Next.js 16+
+ * Only applies to API routes to avoid blocking page requests
  */
-export default function middleware(req, res, next) {
-    // This is an empty middleware function
-    // Add your middleware logic here when needed
-    if (next) {
-        next();
-    }
+export function middleware(request) {
+  // Pass through all requests without blocking
+  return NextResponse.next();
 }
 
-// Alternative export if needed
+/**
+ * Configure middleware to only run on API routes
+ * DO NOT use '/:path*' as it will block all page routes!
+ */
 export const config = {
-    matcher: ['/api/:path*']
+  matcher: ["/api/:path*"],
 };
