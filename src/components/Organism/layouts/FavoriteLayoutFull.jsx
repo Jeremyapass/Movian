@@ -14,8 +14,6 @@ const FavoriteLayoutFull = ({
 }) => {
   const router = useRouter();
 
-  console.log(dataFilms);
-
   return (
     <div className="w-full flex flex-col gap-10">
       <Header

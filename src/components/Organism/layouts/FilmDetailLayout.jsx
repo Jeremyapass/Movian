@@ -6,13 +6,20 @@ import { ArrowUpRight } from "lucide-react";
 import { fonts } from "@/fonts/fonts";
 import RateButton from "@/components/Atoms/buttons/RateButton";
 import AddFavButton from "@/components/Atoms/buttons/AddFavButton";
-import AddWatchListButton from "@/components/Atoms/buttons/AddWatchListButton";
 import UlasanFilmLayout from "@/components/Molecules/layouts/UlasanFilmLayout";
 import GambarCarouselLayout from "@/components/Molecules/carouselLayout/GambarCarouselLayout";
 import PemeranCarouselLayout from "@/components/Molecules/carouselLayout/PemeranCarouselLayout";
 import VideoCarouselLayout from "@/components/Molecules/carouselLayout/VideoCarouselLayout";
+import AddWatchListFilmButton from "@/components/Atoms/buttons/AddWatchListFilmButton";
 
-const FilmDetailLayout = ({ data, isLoading, media_type  }) => { //nnti tambahin isFavorite
+const FilmDetailLayout = ({
+  watchlistData,
+  watchlistFilmData,
+  data,
+  isLoading,
+  media_type,
+}) => {
+  //nnti tambahin isFavorite
   return (
     <div className="flex flex-col w-full gap-3">
       <div className="flex flex-col gap-8 w-full ">
@@ -30,7 +37,13 @@ const FilmDetailLayout = ({ data, isLoading, media_type  }) => { //nnti tambahin
 
         <div className="flex gap-6 w-full">
           <Kiri data={data} isLoading={isLoading} />
-          <Kanan data={data} isLoading={isLoading} media_type={media_type} />
+          <Kanan
+            data={data}
+            isLoading={isLoading}
+            media_type={media_type}
+            watchlistData={watchlistData}
+            watchlistFilmData={watchlistFilmData}
+          />
         </div>
       </div>
     </div>
@@ -101,7 +114,13 @@ const Header = ({ data, isLoading }) => {
   );
 };
 
-const Kanan = ({ data, isLoading, media_type }) => {
+const Kanan = ({
+  data,
+  isLoading,
+  media_type,
+  watchlistData,
+  watchlistFilmData,
+}) => {
   return (
     <div className="flex flex-col gap-5 w-full min-w-0">
       <div className="flex flex-col gap-4">
@@ -121,7 +140,12 @@ const Kanan = ({ data, isLoading, media_type }) => {
             dateRelease={data?.release_date || data?.first_air_date}
             //isFavorite={isFavorite}
           />
-          <AddWatchListButton />
+          <AddWatchListFilmButton
+            watchlistData={watchlistData}
+            watchlistFilmData={watchlistFilmData}
+            filmData={data}
+            media_type={media_type}
+          />
         </div>
       </div>
 

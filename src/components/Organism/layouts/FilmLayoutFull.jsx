@@ -6,7 +6,7 @@ import React from "react";
 const FilmLayoutFull = ({ data, isLoading, type }) => {
   const route = useRouter();
   const mediaConfig = {
-    movies: {
+    movie: {
       name: (d) => d.title,
       date: (d) => d.release_date,
       path: (id) => `/movies/movie-detail/${id}`,
@@ -17,7 +17,7 @@ const FilmLayoutFull = ({ data, isLoading, type }) => {
       path: (id) => `/series/series-detail/${id}`,
     },
     X: {
-      name: (d) => d.x_name, // sesuaikan field
+      name: (d) => d.x_name,  
       date: (d) => d.x_date,
       path: (id) => `/x/x-detail/${id}`,
     },
@@ -33,7 +33,7 @@ const FilmLayoutFull = ({ data, isLoading, type }) => {
           ? [...Array(12)].map((_, i) => (
               <Card layout={"layoutfull"} key={i} isLoading={true} />
             ))
-          : data?.results?.map((data, index) => (
+          : data?.map((data, index) => (
               <Card
                 layout={"layoutfull"}
                 key={index}
