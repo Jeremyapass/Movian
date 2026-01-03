@@ -17,13 +17,13 @@ import { Textarea } from "@/components/ui/textarea";
 import { fonts } from "@/fonts/fonts";
 import ImageCropper from "@/components/Atoms/ImageCropper";
 import { getCroppedImg } from "@/lib/cropImage";
-import { Plus, Upload, X } from "lucide-react";
-import React, { useState, useRef } from "react";
+import { Pencil, Upload, X } from "lucide-react";
+import React, { useState, useRef, useEffect } from "react";
 import Image from "next/image";
-import { useAddWatchlist } from "@/hookAPI/SUPABASE/publicSchema/watchlist/useAddWatchlist";
+import { useUpdateWatchlist } from "@/hookAPI/SUPABASE/publicSchema/watchlist/useUpdateWatchlist";
 import { supabase } from "@/lib/supabaseClient";
 
-const AddWatchListButton = () => {
+const UpdateWatchlistButton = ({ watchlistData }) => {
   const [open, setOpen] = useState(false);
   const [imageSrc, setImageSrc] = useState(null);
   const [croppedImage, setCroppedImage] = useState(null);
@@ -34,8 +34,21 @@ const AddWatchListButton = () => {
   const [description, setDescription] = useState("");
   const fileInputRef = useRef(null);
 
-  const { mutate: addWatchlistMutate, isPending: isAddWatchlistPending } =
-    useAddWatchlist();
+  const { mutate: updateWatchlistMutate, isPending: isUpdateWatchlistPending } =
+    useUpdateWatchlist();
+
+  // Set initial values saat dialog dibuka
+  useEffect(() => {
+    if (open && watchlistData) {
+      setName(watchlistData.name || "");
+      setDescription(watchlistData.description || "");
+      setPrivacy(watchlistData.is_public ? "Public" : "Private");
+      // Set existing image jika ada
+      if (watchlistData.picture_path) {
+        setCroppedImage(watchlistData.picture_path);
+      }
+    }
+  }, [open, watchlistData]);
 
   const handleFileChange = (e) => {
     if (e.target.files && e.target.files.length > 0) {
@@ -125,8 +138,9 @@ const AddWatchListButton = () => {
       return;
     }
 
-    let pictureUrl = null;
+    let pictureUrl = croppedImage; // Gunakan gambar yang sudah ada
 
+    // Upload gambar baru jika ada perubahan
     if (croppedImageBlob) {
       try {
         const fileName = `${Date.now()}-${Math.random()
@@ -159,15 +173,15 @@ const AddWatchListButton = () => {
     }
 
     const payload = {
+      watchlistId: watchlistData.id,
       name: name.trim(),
       description: description.trim(),
       is_public: privacy === "Public",
       picture_path: pictureUrl,
     };
 
-    addWatchlistMutate(payload, {
+    updateWatchlistMutate(payload, {
       onSuccess: () => {
-        console.log("SUKSES");
         handleCloseDialog();
       },
     });
@@ -176,10 +190,11 @@ const AddWatchListButton = () => {
   return (
     <>
       <Button
-        className="flex items-center gap-1 w-fit bg-[#7B61FF] hover:bg-[#7B61FF]/80 -mb-[25px]"
+        className={`${fonts.satoshi.className}  font-semibold hover:bg-[#2A2A2A]  w-full justify-start items-center gap-2`}
         onClick={() => setOpen(true)}
       >
-        Watchlist Baru <Plus />
+        <Pencil size={16} />
+        Edit
       </Button>
 
       <Dialog
@@ -209,7 +224,7 @@ const AddWatchListButton = () => {
           }}
         >
           <DialogTitle>
-            {showCropper ? "Crop Gambar" : "Tambahkan Watchlist"}
+            {showCropper ? "Crop Gambar" : "Edit Watchlist"}
           </DialogTitle>
 
           {showCropper ? (
@@ -235,6 +250,7 @@ const AddWatchListButton = () => {
                       alt="Cropped preview"
                       fill
                       className="object-cover"
+                      sizes="200px"
                     />
                     <button
                       onClick={handleRemoveImage}
@@ -336,9 +352,9 @@ const AddWatchListButton = () => {
               <Button
                 className="w-fit bg-[#7B61FF] hover:bg-[#7B61FF]/80"
                 onClick={handleSubmit}
-                disabled={isAddWatchlistPending}
+                disabled={isUpdateWatchlistPending}
               >
-                {isAddWatchlistPending ? "Menambahkan..." : "Tambah"}
+                {isUpdateWatchlistPending ? "Mengupdate..." : "Update"}
               </Button>
 
               <Button
@@ -359,4 +375,4 @@ const AddWatchListButton = () => {
   );
 };
 
-export default AddWatchListButton;
+export default UpdateWatchlistButton;

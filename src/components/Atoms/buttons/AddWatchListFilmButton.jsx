@@ -1,0 +1,206 @@
+"use client";
+
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import clsx from "clsx";
+import { Check, Plus, Loader2 } from "lucide-react";
+import React, { useState, useRef, useEffect } from "react";
+import gsap from "gsap";
+import { useAddWatchlistFilm } from "@/hookAPI/SUPABASE/publicSchema/watchlist/watchlistFilm/useAddWatchlistFilm";
+import { useDeleteWatchlistFilm } from "@/hookAPI/SUPABASE/publicSchema/watchlist/watchlistFilm/useDeleteWatchlistFilm";
+
+const UI_DELAY = 400;
+
+const AddWatchListFilmButton = ({
+  watchlistData,
+  watchlistFilmData,
+  filmData,
+  media_type,
+  className,
+}) => {
+  const [isActive, setIsActive] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [selected, setSelected] = useState([]);
+  const [uiLoading, setUiLoading] = useState(false);
+
+  const iconRef = useRef(null);
+
+  const { mutate: addWatchlistFilmMutate, isPending: isAdding } =
+    useAddWatchlistFilm();
+  const { mutate: deleteWatchlistFilmMutate, isPending: isDeleting } =
+    useDeleteWatchlistFilm();
+
+  const animateIcon = () => {
+    if (!iconRef.current) return;
+    gsap.fromTo(
+      iconRef.current,
+      { scale: 0.6, opacity: 0.5 },
+      { scale: 1, opacity: 1, duration: 0.25, ease: "back.out(2)" }
+    );
+  };
+
+  // Function untuk mendapatkan state awal selected
+  const getInitialSelected = () => {
+    if (!watchlistData || !watchlistFilmData || !filmData) return [];
+
+    return watchlistData.filter((watchlist) =>
+      watchlistFilmData.some(
+        (wf) =>
+          wf.watchlist?.id === watchlist.id &&
+          wf.movie_cache?.tmdb_movie_id === filmData.id
+      )
+    );
+  };
+
+  // Set initial selected dan isActive
+  useEffect(() => {
+    const preSelected = getInitialSelected();
+    setSelected(preSelected);
+    setIsActive(preSelected.length > 0);
+  }, [watchlistData, watchlistFilmData, filmData]);
+
+  // Reset selected saat dialog ditutup tanpa klik "Selesai"
+  const handleOpenChange = (isOpen) => {
+    setOpen(isOpen);
+
+    // Jika dialog ditutup, reset ke state awal
+    if (!isOpen) {
+      const initialSelected = getInitialSelected();
+      setSelected(initialSelected);
+    }
+  };
+
+  const toggleSelect = (item) => {
+    setSelected((prev) => {
+      const exists = prev.find((w) => w.id === item.id);
+      if (exists) return prev.filter((w) => w.id !== item.id);
+      return [...prev, item];
+    });
+  };
+
+  const handleDone = () => {
+    if (!filmData) return;
+
+    setOpen(false);
+
+    const currentWatchlistIds = watchlistFilmData
+      .filter((wf) => wf.movie_cache?.tmdb_movie_id === filmData.id)
+      .map((wf) => wf.watchlist?.id)
+      .filter(Boolean);
+
+    const toAdd = selected.filter((s) => !currentWatchlistIds.includes(s.id));
+    const toDelete = watchlistData.filter(
+      (w) =>
+        currentWatchlistIds.includes(w.id) &&
+        !selected.some((s) => s.id === w.id)
+    );
+
+    setIsActive(selected.length > 0);
+    animateIcon();
+    setUiLoading(true);
+
+    if (toAdd.length > 0) {
+      const payload = toAdd.map((item) => ({
+        tmdbMovieId: filmData.id,
+        name: filmData.title || filmData.name,
+        type: media_type,
+        posterPath: filmData.poster_path,
+        dateRelease: filmData.release_date || filmData.first_air_date,
+        watchlistId: item.id,
+      }));
+      addWatchlistFilmMutate(payload, { onSettled: () => setUiLoading(false) });
+    }
+
+    if (toDelete.length > 0) {
+      const payload = toDelete.map((item) => ({
+        tmdbMovieId: filmData.id,
+        watchlistId: item.id,
+      }));
+      deleteWatchlistFilmMutate(payload, {
+        onSettled: () => setUiLoading(false),
+      });
+    }
+
+    if (toAdd.length === 0 && toDelete.length === 0) {
+      setTimeout(() => setUiLoading(false), UI_DELAY);
+    }
+  };
+
+  return (
+    <>
+      <Button
+        onClick={(e) => {
+          e.stopPropagation();
+          setOpen(true);
+        }}
+        disabled={uiLoading || isAdding || isDeleting}
+        className={clsx(
+          "relative rounded-full text-white p-[14px] h-[44px]",
+          isActive
+            ? "bg-[#7B61FF] hover:bg-[#7B61FF]/80"
+            : `bg-[#2A2A2A] hover:bg-[#2F2F2F] ${className}`,
+          (uiLoading || isAdding || isDeleting) &&
+            "opacity-60 cursor-not-allowed"
+        )}
+      >
+        <div ref={iconRef}>
+          {uiLoading ? (
+            <Loader2 className="w-5 h-5 animate-spin" />
+          ) : isActive ? (
+            <Check />
+          ) : (
+            <Plus />
+          )}
+        </div>
+      </Button>
+
+      <Dialog open={open} onOpenChange={handleOpenChange}>
+        <DialogContent className="max-w-sm" aria-describedby={undefined}>
+          <DialogTitle>Tambahkan ke Watchlist</DialogTitle>
+
+          <div className="space-y-2 mt-4">
+            {watchlistData?.map((item) => {
+              const isSelected = selected.some((w) => w.id === item.id);
+              return (
+                <div
+                  key={item.id}
+                  onClick={() => toggleSelect(item)}
+                  className={clsx(
+                    "cursor-pointer rounded-md px-4 py-3 transition flex items-center justify-between",
+                    isSelected
+                      ? "bg-[#7B61FF]/20 text-[#7B61FF]"
+                      : "hover:bg-muted"
+                  )}
+                >
+                  <span>{item.name}</span>
+                  {isSelected && <Check className="w-4 h-4" />}
+                </div>
+              );
+            })}
+          </div>
+
+          <DialogFooter className="flex flex-col gap-2 pt-4 w-full">
+            <Button
+              onClick={handleDone}
+              disabled={isAdding || isDeleting}
+              className="w-fit bg-[#7B61FF] hover:bg-[#7B61FF]/80"
+            >
+              Selesai
+            </Button>
+
+            <Button variant="ghost" onClick={() => setOpen(false)}>
+              Batal
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
+  );
+};
+
+export default AddWatchListFilmButton;
