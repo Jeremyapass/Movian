@@ -2,23 +2,21 @@ import { supabase } from "@/lib/supabaseClient";
 import { useQuery } from "@tanstack/react-query";
 
 const GetAccountDetail = async () => {
-  // 1. cek auth
+  // 1️⃣ Ambil session (cepat)
   const {
-    data: { user },
-    error: authError,
-  } = await supabase.auth.getUser();
+    data: { session },
+  } = await supabase.auth.getSession();
 
-  if (authError) throw authError;
-  if (!user?.email) return null; // belum login
+  if (!session?.user?.email) return null;
 
-  // 2. cari user di public_user berdasarkan email
+  // 2️⃣ Baru fetch data user
   const { data, error } = await supabase
     .from("public_user")
     .select(
-      "username, profile_picture, cover_picture, bio, is_favorite_public, review_count"
+      "username, profile_picture, cover_picture, bio, is_favorite_public, review_count, watchlist_count, favorite_count"
     )
-    .eq("email", user.email)
-    .single(); // asumsi email unik
+    .eq("email", session.user.email)
+    .single();
 
   if (error && error.code !== "PGRST116") {
     throw error;
