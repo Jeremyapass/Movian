@@ -7,6 +7,8 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { fonts } from "@/fonts/fonts";
 import { useGetAccountDetail } from "@/hookAPI/SUPABASE/publicSchema/account/useGetAccountDetail";
+import AddReviewSkeleton from "@/components/Skeletons/AddReviewSkeleton";
+import { useRoot } from "@/provider/rootProvider";
 
 const UlasanFilmLayout = () => {
   const getRateVariant = (rate) => {
@@ -45,14 +47,11 @@ const UlasanFilmLayout = () => {
 const AddReview = () => {
   const [isWriting, setIsWriting] = useState(false);
   const route = useRouter();
-  const { data: accountDetailData, isLoading: isAccountDetailLoading } =
-    useGetAccountDetail();
+  const { getAccountDetailData, isGetAccountDetailLoading } = useRoot();
 
-  // console.log("account data", accountDetailData);
+  if (isGetAccountDetailLoading) return <AddReviewSkeleton />;
 
-  if (isAccountDetailLoading) return null;
-
-  if (!accountDetailData) {
+  if (!getAccountDetailData) {
     return (
       <div className="flex flex-col gap-[10px]      ">
         <div className="flex gap-[10px] items-center">
