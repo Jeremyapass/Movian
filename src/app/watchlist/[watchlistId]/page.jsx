@@ -1,37 +1,34 @@
 "use client";
 import WatchlistFilmLayoutFull from "@/components/Organism/layouts/WatchlistFilmLayoutFull";
-import { useWatchlist, WatchlistProvider } from "@/provider/watchlistProvider";
+import {
+  useWatchlistFilm,
+  WatchlistFilmProvider,
+} from "@/provider/watchlistFilmProvider";
 import { useParams } from "next/navigation";
 import React from "react";
 
 const PageContent = () => {
-  const {
-    data,
-    isWatchlistFilmLoading,
-    isWatchlistPageLoading,
-    isWatchlistLoading,
-    handleFilter,
-    filterType,
-  } = useWatchlist();
+  const { dataFilms, isLoading, handleFilter, filterType, getWatchlistData } =
+    useWatchlistFilm();
 
-  console.log(data);
+
   return (
     <WatchlistFilmLayoutFull
-      data={data}
-      isLoading={
-        isWatchlistFilmLoading || isWatchlistPageLoading || isWatchlistLoading
-      }
+      watchlistData={getWatchlistData}
+      dataFilms={dataFilms}
+      isLoading={isLoading}
       handleFilter={handleFilter}
       filterType={filterType}
     />
   );
 };
+
 const WatchlistDetailPage = () => {
   const { watchlistId } = useParams();
   return (
-    <WatchlistProvider watchlistId={watchlistId}>
+    <WatchlistFilmProvider watchlistId={watchlistId}>
       <PageContent watchlistId={watchlistId} />
-    </WatchlistProvider>
+    </WatchlistFilmProvider>
   );
 };
 
