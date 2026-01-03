@@ -20,8 +20,6 @@ const PageConent = () => {
     handleViewAllClickSeries,
   } = useMain();
 
-  console.log(nowPlayingData);
-
   return (
     <div
       className={`flex flex-col gap-12 justify-center h-full items-center  w-full`}
