@@ -11,9 +11,10 @@ const GetAiringTodaySeries =  () => {
     });
 };
 
-export const UseGetAiringTodaySeries = () => {
+export const UseGetAiringTodaySeries = (enable = true) => {
   return useQuery({
     queryKey: ["getAiringTodaySeries"],
     queryFn: GetAiringTodaySeries,
+    enabled: enable,
   });
 };

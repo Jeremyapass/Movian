@@ -2,7 +2,7 @@
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 
-const GetUpcoming =  () => {
+const GetUpcoming = () => {
   return axios
     .get("/api/TMDB/movieList/get-up-coming")
     .then((res) => res.data)
@@ -12,9 +12,10 @@ const GetUpcoming =  () => {
     });
 };
 
-export const UseGetUpcoming = () => {
+export const UseGetUpcoming = (enable = true) => {
   return useQuery({
     queryKey: ["getUpcoming"],
     queryFn: GetUpcoming,
+    enabled: enable,
   });
 };

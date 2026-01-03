@@ -12,9 +12,10 @@ const GetPopular =  () => {
     });
 };
 
-export const UseGetPopular = () => {
+export const UseGetPopular = (enable = true) => {
   return useQuery({
     queryKey: ["getPopular"],
     queryFn: GetPopular,
+    enabled: enable,
   });
 };

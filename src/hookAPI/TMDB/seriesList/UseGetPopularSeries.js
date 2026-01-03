@@ -11,9 +11,10 @@ const GetPopularSeries =  () => {
     });
 };
 
-export const UseGetPopularSeries = () => {
+export const UseGetPopularSeries = (enable = true) => {
   return useQuery({
     queryKey: ["getPopularSeries"],
     queryFn: GetPopularSeries,
+    enabled: enable,
   });
 };

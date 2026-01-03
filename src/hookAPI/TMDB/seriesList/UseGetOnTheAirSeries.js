@@ -11,9 +11,10 @@ const GetOnTheAirSeries =  () => {
     });
 };
 
-export const UseGetOnTheAirSeries = () => {
+export const UseGetOnTheAirSeries = (enable = true) => {
   return useQuery({
     queryKey: ["getOnTheAirSeries"],
     queryFn: GetOnTheAirSeries,
+    enabled: enable,
   });
 };

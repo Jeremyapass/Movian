@@ -11,9 +11,10 @@ const GetTopRatedSeries = () => {
     });
 };
 
-export const UseGetTopRatedSeries = () => {
+export const UseGetTopRatedSeries = (enable = true) => {
   return useQuery({
     queryKey: ["getTopRatedSeries"],
     queryFn: GetTopRatedSeries,
+    enabled: enable,
   });
 };

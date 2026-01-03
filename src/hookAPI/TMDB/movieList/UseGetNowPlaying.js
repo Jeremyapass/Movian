@@ -2,7 +2,7 @@
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 
-const GetNowPlaying =  () => {
+const GetNowPlaying = () => {
   return axios
     .get("/api/TMDB/movieList/get-now-playing")
     .then((res) => res.data)
@@ -12,9 +12,10 @@ const GetNowPlaying =  () => {
     });
 };
 
-export const UseGetNowPlaying = () => {
+export const UseGetNowPlaying = (enable = true) => {
   return useQuery({
     queryKey: ["getNowPlaying"],
     queryFn: GetNowPlaying,
+    enabled: enable,
   });
 };

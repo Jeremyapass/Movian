@@ -12,9 +12,10 @@ const GetTopRated =  () => {
     });
 };
 
-export const UseGetTopRated = () => {
+export const UseGetTopRated = (enable = true) => {
   return useQuery({
     queryKey: ["getTopRated"],
     queryFn: GetTopRated,
+    enabled: enable,
   });
 };
