@@ -43,7 +43,10 @@ const MoreButton = ({
           className="w-fit bg-[#1A1A1A] p-2 flex flex-col gap-1"
         >
           <div onClick={(e) => e.stopPropagation()}>
-            <UpdateWatchlistButton watchlistData={watchlistData} />
+            <UpdateWatchlistButton
+              watchlistData={watchlistData}
+              onClosePopover={() => setOpenPopover(false)}
+            />
           </div>
 
           <Button
