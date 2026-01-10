@@ -1,9 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 
-const GetTopRatedSeries = () => {
+const GetTopRatedSeries = (page = 1) => {
   return axios
-    .get("/api/TMDB/seriesList/get-top-rated-series")
+    .get("/api/TMDB/seriesList/get-top-rated-series", {
+      params: { page },
+    })
     .then((res) => res.data)
     .catch((error) => {
       // optional: log atau lempar error
@@ -11,10 +13,10 @@ const GetTopRatedSeries = () => {
     });
 };
 
-export const UseGetTopRatedSeries = (enable = true) => {
+export const UseGetTopRatedSeries = (enable = true, page = 1) => {
   return useQuery({
-    queryKey: ["getTopRatedSeries"],
-    queryFn: GetTopRatedSeries,
+    queryKey: ["getTopRatedSeries", page],
+    queryFn: () => GetTopRatedSeries(page),
     enabled: enable,
   });
 };

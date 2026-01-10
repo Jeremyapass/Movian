@@ -1,9 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 
-const GetAiringTodaySeries =  () => {
+const GetAiringTodaySeries = (page = 1) => {
   return axios
-    .get("/api/TMDB/seriesList/get-airing-today-series")
+    .get("/api/TMDB/seriesList/get-airing-today-series", {
+      params: { page },
+    })
     .then((res) => res.data)
     .catch((error) => {
       // optional: log atau lempar error
@@ -11,10 +13,10 @@ const GetAiringTodaySeries =  () => {
     });
 };
 
-export const UseGetAiringTodaySeries = (enable = true) => {
+export const UseGetAiringTodaySeries = (enable = true, page = 1) => {
   return useQuery({
-    queryKey: ["getAiringTodaySeries"],
-    queryFn: GetAiringTodaySeries,
+    queryKey: ["getAiringTodaySeries", page],
+    queryFn: () => GetAiringTodaySeries(page),
     enabled: enable,
   });
 };
