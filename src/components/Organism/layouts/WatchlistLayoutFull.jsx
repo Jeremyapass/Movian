@@ -9,23 +9,30 @@ import { useWatchlist } from "@/provider/watchlistProvider";
 import { useRouter } from "next/navigation";
 import React from "react";
 
-const WatchlistLayoutFull = ({ data, isLoading }) => {
+const WatchlistLayoutFull = ({
+  data,
+  isLoading,
+  currentPage,
+  totalPages,
+  onPageChange,
+  totalCount,
+}) => {
   const router = useRouter();
   const { handleDeleteWatchlist, isDeletingWatchlistPending } = useWatchlist();
-  const { getAccountDetailData, isGetAccountDetailLoading } = useRoot();
 
   return (
     <div className="w-full flex flex-col gap-10">
       <h1 className={`${fonts.clash.className} font-semibold text-4xl`}>
-        Watchlist ({getAccountDetailData?.watchlist_count})
+        Watchlist ({totalCount || 0})
       </h1>
 
       <AddWatchListButton />
-      {/* 🔥 LOADING */}
+
       {isLoading ? (
+        /* LOADING */
         <div className="w-full grid grid-cols-4 md:grid-cols-5 lg:grid-cols-6 justify-items-center gap-2">
           {[...Array(12)].map((_, i) => (
-            <Card key={i} layout="layoutfull" isLoading />
+            <WatchListCard key={i} isLoading={true} layout="layoutfull" />
           ))}
         </div>
       ) : data.length === 0 ? (
@@ -56,7 +63,11 @@ const WatchlistLayoutFull = ({ data, isLoading }) => {
         </div>
       )}
 
-      <Pagination />
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={onPageChange}
+      />
     </div>
   );
 };
