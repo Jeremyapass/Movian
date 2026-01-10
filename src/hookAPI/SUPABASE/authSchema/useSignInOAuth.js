@@ -10,7 +10,7 @@ const SignInOAuth = async () => {
   });
 
   if (error) throw error;
-  
+
   return data;
 };
 
@@ -18,6 +18,11 @@ export const useSignInOAuth = () => {
   return useMutation({
     mutationKey: ["SignInOAuth"],
     mutationFn: SignInOAuth,
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["account-detail"],
+      });
+    },
   });
 };
 
