@@ -1,7 +1,9 @@
 import { supabase } from "@/lib/supabaseClient";
 import { useQuery } from "@tanstack/react-query";
 
-const GetWatchlist = async ({ watchlistId }) => {
+const ITEMS_PER_PAGE = 30;
+
+const GetWatchlist = async ({ watchlistId, page = 1 }) => {
   const {
     data: { user },
     error: authError,
@@ -13,27 +15,38 @@ const GetWatchlist = async ({ watchlistId }) => {
   let query = supabase
     .from("watchlist")
     .select(
-      "id, name, description, is_public, show_comments, picture_path, total_movie, total_series"
+      "id, name, description, is_public, show_comments, picture_path, total_movie, total_series",
+      { count: "exact" }
     )
-    .eq("user_id", user.id);
-
+    .eq("user_id", user.id)
+    .order("updated_at", { ascending: false })
+    .order("created_at", { ascending: false });
 
   if (watchlistId) {
     const { data, error } = await query.eq("id", watchlistId).single();
     if (error) throw error;
-    return data;
+    return { data, count: 1 };
   }
 
-  const { data, error } = await query;
+  // Add pagination
+  const from = (page - 1) * ITEMS_PER_PAGE;
+  const to = from + ITEMS_PER_PAGE - 1;
+
+  const { data, error, count } = await query.range(from, to);
   if (error) throw error;
 
-  return data;
+  return {
+    data,
+    count,
+    totalPages: Math.ceil((count || 0) / ITEMS_PER_PAGE),
+  };
 };
 
-export const useGetWatchlist = ({ watchlistId } = {}) => {
+export const useGetWatchlist = ({ watchlistId, page = 1 } = {}) => {
   return useQuery({
-    queryKey: ["get-all-watchlist", watchlistId ?? "all"],
-    queryFn: () => GetWatchlist({ watchlistId }),
+    queryKey: ["get-all-watchlist", watchlistId ?? "all", page],
+    queryFn: () => GetWatchlist({ watchlistId, page }),
     enabled: watchlistId === undefined || !!watchlistId,
+    placeholderData: (previousData) => previousData,
   });
 };
