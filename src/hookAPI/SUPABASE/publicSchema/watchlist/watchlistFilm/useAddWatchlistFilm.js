@@ -65,12 +65,14 @@ export const useAddWatchlistFilm = () => {
   return useMutation({
     mutationFn: AddWatchlistFilm,
     onSuccess: () => {
+      // Invalidate semua watchlist queries untuk update data
       queryClient.invalidateQueries({
         queryKey: ["get-all-watchlist-films"],
         exact: false,
       });
       queryClient.invalidateQueries({
         queryKey: ["get-all-watchlist"],
+        exact: false,
       });
     },
   });

@@ -35,26 +35,22 @@ const DeleteWatchlistFilm = async (items) => {
     watchlist_id: item.watchlistId,
   }));
 
-  // Supabase tidak bisa delete multiple rows dengan object array, jadi kita lakukan filter in sequence
-  // Tapi tetap bulk-friendly: bisa digabung dengan OR
-  const filter = deleteQuery.reduce((acc, cur, i) => {
-    acc[
-      `movie_cache_id.eq.${cur.movie_cache_id}.watchlist_id.eq.${cur.watchlist_id}`
-    ] = true;
-    return acc;
-  }, {});
+  // Bulk delete dengan .or() untuk multiple conditions
+  // Format: and(movie_cache_id.eq.X,watchlist_id.eq.Y),and(movie_cache_id.eq.A,watchlist_id.eq.B)
+  const orConditions = deleteQuery
+    .map(
+      (d) =>
+        `and(movie_cache_id.eq.${d.movie_cache_id},watchlist_id.eq.${d.watchlist_id})`
+    )
+    .join(",");
 
-  // Alternatif sederhana: iterasi kecil (biasanya aman karena delete cepat)
-  for (const d of deleteQuery) {
-    const { error } = await supabase
-      .from("watchlist_films")
-      .delete()
-      .eq("user_id", d.user_id)
-      .eq("movie_cache_id", d.movie_cache_id)
-      .eq("watchlist_id", d.watchlist_id);
+  const { error } = await supabase
+    .from("watchlist_films")
+    .delete()
+    .eq("user_id", user.id)
+    .or(orConditions);
 
-    if (error) throw error;
-  }
+  if (error) throw error;
 };
 
 export const useDeleteWatchlistFilm = () => {
@@ -63,12 +59,14 @@ export const useDeleteWatchlistFilm = () => {
   return useMutation({
     mutationFn: DeleteWatchlistFilm,
     onSuccess: () => {
+      // Invalidate semua watchlist queries untuk update data
       queryClient.invalidateQueries({
         queryKey: ["get-all-watchlist-films"],
         exact: false,
       });
       queryClient.invalidateQueries({
         queryKey: ["get-all-watchlist"],
+        exact: false,
       });
     },
   });
