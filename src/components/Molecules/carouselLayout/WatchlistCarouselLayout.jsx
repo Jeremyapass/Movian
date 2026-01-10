@@ -93,7 +93,7 @@ const WatchlistCarouselLayout = ({ title, data, isLoading }) => {
       {isLoading ? (
         <div className="flex gap-[24px] w-full overflow-x-auto no-scrollbar">
           {[...Array(6)].map((_, i) => (
-            <WatchListCard key={i} />
+            <WatchListCard key={i} isLoading={true} layout="carousel" />
           ))}
         </div>
       ) : !hasData ? (
@@ -118,6 +118,7 @@ const WatchlistCarouselLayout = ({ title, data, isLoading }) => {
               data={item}
               layout="carousel"
               onClick={() => route.push(`/watchlist/${item.id}`)}
+              isLoading={isLoading}
             />
           ))}
         </div>
