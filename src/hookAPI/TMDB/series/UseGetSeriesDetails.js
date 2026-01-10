@@ -26,5 +26,6 @@ export const useGetSeriesDetails = (series_id) => {
     queryKey: ["getSeriesDetails", series_id],
     queryFn: () => getSeriesDetails(series_id),
     enabled: !!series_id, // penting
+    placeholderData: (previousData) => previousData,
   });
 };

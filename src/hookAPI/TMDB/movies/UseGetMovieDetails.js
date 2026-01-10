@@ -24,8 +24,9 @@ const GetMoviesDetails = (movies_id) => {
 
 export const useGetMoviesDetails = (movies_id) => {
   return useQuery({
-    queryKey: ["getMoviesDetails", movies_id],
+    queryKey: ["get-movies-detail", movies_id],
     queryFn: () => GetMoviesDetails(movies_id),
     enabled: !!movies_id,
+    placeholderData: (previousData) => previousData,
   });
 };
