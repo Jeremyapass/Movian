@@ -43,10 +43,10 @@ const PageContent = () => {
           />
           <WatchlistCarouselLayout
             title={"Watchlist"}
-            data={getWatchlistData}
+            data={getWatchlistData?.data}
             isLoading={isWatchlistLoading}
           />
-          <UlasanProfileLayout />
+          {/* <UlasanProfileLayout /> */}
         </div>
       </div>
     </div>
