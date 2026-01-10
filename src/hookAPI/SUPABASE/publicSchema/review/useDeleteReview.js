@@ -1,35 +1,40 @@
 import { supabase } from "@/lib/supabaseClient";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-//BELUM YA. TAMBAHIN PARAMS NYA NANTI, TRUS KASIH KE GPT
-const DeleteReview = async () => {
+const DeleteReview = async ({ movieCacheId }) => {
   const {
     data: { user },
     error: authError,
   } = await supabase.auth.getUser();
 
   if (authError) throw authError;
-  if (!user?.id) return null;
+  if (!user?.id) throw new Error("Unauthorized");
 
-  let query = supabase
-    .from("favorite_movie")
-    .select("tmdb_movie_id, type")
-    .eq("user_id", user.id);
+  if (!movieCacheId) {
+    throw new Error("movieCacheId is required");
+  }
 
-  const { data, error } = await query;
+  const { error } = await supabase
+    .from("reviewed_films")
+    .delete()
+    .eq("user_id", user.id)
+    .eq("movie_cache_id", movieCacheId);
+
   if (error) throw error;
 
-  return data;
+  return true;
 };
 
+export default DeleteReview;
+
 export const useDeleteReview = () => {
-  const query = useQueryClient();
+  const queryClient = useQueryClient();
+
   return useMutation({
-    mutationFn: DeleteReview,
     mutationKey: ["delete-film-review"],
-    onSuccess: (data) => {
-      query.invalidateQueries(["get-film-review"]);
+    mutationFn: DeleteReview,
+    onSuccess: () => {
+      queryClient.invalidateQueries(["get-film-review"]);
     },
   });
 };
-
