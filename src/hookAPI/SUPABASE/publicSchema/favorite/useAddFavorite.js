@@ -46,9 +46,11 @@ export const useAddFavoriteMovies = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["get-all-favorite"],
+        exact: false,
       });
       queryClient.invalidateQueries({
         queryKey: ["get-total-favorite"],
+        exact: false,
       });
     },
   });

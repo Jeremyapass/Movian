@@ -33,9 +33,9 @@ export const useDeleteFavoriteMovies = () => {
   return useMutation({
     mutationFn: DeleteFavoriteMovies,
     onSuccess: () => {
-      // Hanya invalidate query yang benar-benar perlu di-update
       queryClient.invalidateQueries({
         queryKey: ["get-all-favorite"],
+        exact: false,
       });
       queryClient.invalidateQueries({
         queryKey: ["get-total-favorite"],
