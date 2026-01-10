@@ -12,19 +12,21 @@ export const WatchlistFilmProvider = ({ watchlistId, children }) => {
   const [page, setPage] = useState(1);
 
   const { data: getWatchlistData, isLoading: isWatchlistLoading } =
-    useGetWatchlist({watchlistId : [watchlistId]});  
+    useGetWatchlist({ watchlistId: [watchlistId] });
   const {
     data: getAllWatchlistFilmData,
     isLoading: isAllWatchlistFilmLoading,
   } = useGetAllWatchlistFilm({
     watchlistId: [watchlistId],
     page,
+    enabled: filterType === "all",
   });
   const {
     data: getAllWatchlistMovieData,
     isLoading: isAllWatchlistMovieLoading,
   } = useGetAllWatchlistMovie({
     watchlistId: watchlistId,
+    page,
     enabled: filterType === "movie",
   });
   const {
@@ -32,6 +34,7 @@ export const WatchlistFilmProvider = ({ watchlistId, children }) => {
     isLoading: isAllWatchlistSeriesLoading,
   } = useGetAllWatchlistSeries({
     watchlistId: watchlistId,
+    page,
     enabled: filterType === "series",
   });
 
@@ -41,9 +44,17 @@ export const WatchlistFilmProvider = ({ watchlistId, children }) => {
     isAllWatchlistSeriesLoading;
 
   const dataFilms = useMemo(() => {
-    if (filterType === "movie") return getAllWatchlistMovieData;
-    if (filterType === "series") return getAllWatchlistSeriesData;
-    return getAllWatchlistFilmData;
+    if (filterType === "movie")
+      return (
+        getAllWatchlistMovieData || { data: [], totalPages: 1, totalItems: 0 }
+      );
+    if (filterType === "series")
+      return (
+        getAllWatchlistSeriesData || { data: [], totalPages: 1, totalItems: 0 }
+      );
+    return (
+      getAllWatchlistFilmData || { data: [], totalPages: 1, totalItems: 0 }
+    );
   }, [
     filterType,
     getAllWatchlistFilmData,
@@ -54,6 +65,11 @@ export const WatchlistFilmProvider = ({ watchlistId, children }) => {
   const handleFilter = (type) => {
     setFilterType(type);
     setPage(1); // reset pagination
+  };
+
+  const handlePageChange = (newPage) => {
+    setPage(newPage);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   return (
@@ -69,6 +85,7 @@ export const WatchlistFilmProvider = ({ watchlistId, children }) => {
         isLoading,
 
         handleFilter,
+        handlePageChange,
       }}
     >
       {children}
