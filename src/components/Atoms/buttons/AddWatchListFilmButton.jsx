@@ -13,6 +13,9 @@ import React, { useState, useRef, useEffect } from "react";
 import gsap from "gsap";
 import { useAddWatchlistFilm } from "@/hookAPI/SUPABASE/publicSchema/watchlist/watchlistFilm/useAddWatchlistFilm";
 import { useDeleteWatchlistFilm } from "@/hookAPI/SUPABASE/publicSchema/watchlist/watchlistFilm/useDeleteWatchlistFilm";
+import { useRoot } from "@/provider/rootProvider";
+import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
 
 const UI_DELAY = 400;
 
@@ -29,6 +32,8 @@ const AddWatchListFilmButton = ({
   const [uiLoading, setUiLoading] = useState(false);
 
   const iconRef = useRef(null);
+  const { getAccountDetailData } = useRoot();
+  const router = useRouter();
 
   const { mutate: addWatchlistFilmMutate, isPending: isAdding } =
     useAddWatchlistFilm();
@@ -48,8 +53,16 @@ const AddWatchListFilmButton = ({
   const getInitialSelected = () => {
     if (!watchlistData || !watchlistFilmData || !filmData) return [];
 
-    return watchlistData.filter((watchlist) =>
-      watchlistFilmData.some(
+    // Handle pagination structure
+    const watchlists = Array.isArray(watchlistData)
+      ? watchlistData
+      : watchlistData.data || [];
+    const watchlistFilms = Array.isArray(watchlistFilmData)
+      ? watchlistFilmData
+      : watchlistFilmData.data || [];
+
+    return watchlists.filter((watchlist) =>
+      watchlistFilms.some(
         (wf) =>
           wf.watchlist?.id === watchlist.id &&
           wf.movie_cache?.tmdb_movie_id === filmData.id
@@ -68,11 +81,18 @@ const AddWatchListFilmButton = ({
   const handleOpenChange = (isOpen) => {
     setOpen(isOpen);
 
-    // Jika dialog ditutup, reset ke state awal
+    // Jika dialog ditutup (termasuk tombol Batal), reset ke state awal
     if (!isOpen) {
       const initialSelected = getInitialSelected();
       setSelected(initialSelected);
     }
+  };
+
+  const handleCancel = () => {
+    // Reset ke state awal
+    const initialSelected = getInitialSelected();
+    setSelected(initialSelected);
+    setOpen(false);
   };
 
   const toggleSelect = (item) => {
@@ -86,15 +106,21 @@ const AddWatchListFilmButton = ({
   const handleDone = () => {
     if (!filmData) return;
 
-    setOpen(false);
+    // Handle pagination structure
+    const watchlists = Array.isArray(watchlistData)
+      ? watchlistData
+      : watchlistData.data || [];
+    const watchlistFilms = Array.isArray(watchlistFilmData)
+      ? watchlistFilmData
+      : watchlistFilmData.data || [];
 
-    const currentWatchlistIds = watchlistFilmData
+    const currentWatchlistIds = watchlistFilms
       .filter((wf) => wf.movie_cache?.tmdb_movie_id === filmData.id)
       .map((wf) => wf.watchlist?.id)
       .filter(Boolean);
 
     const toAdd = selected.filter((s) => !currentWatchlistIds.includes(s.id));
-    const toDelete = watchlistData.filter(
+    const toDelete = watchlists.filter(
       (w) =>
         currentWatchlistIds.includes(w.id) &&
         !selected.some((s) => s.id === w.id)
@@ -103,6 +129,15 @@ const AddWatchListFilmButton = ({
     setIsActive(selected.length > 0);
     animateIcon();
     setUiLoading(true);
+
+    // Tutup dialog dan reset state
+    setOpen(false);
+
+    const onMutationComplete = () => {
+      setUiLoading(false);
+      // Reset selected ke state baru setelah mutation
+      // State akan di-update otomatis oleh useEffect saat watchlistFilmData berubah
+    };
 
     if (toAdd.length > 0) {
       const payload = toAdd.map((item) => ({
@@ -113,7 +148,7 @@ const AddWatchListFilmButton = ({
         dateRelease: filmData.release_date || filmData.first_air_date,
         watchlistId: item.id,
       }));
-      addWatchlistFilmMutate(payload, { onSettled: () => setUiLoading(false) });
+      addWatchlistFilmMutate(payload, { onSettled: onMutationComplete });
     }
 
     if (toDelete.length > 0) {
@@ -122,12 +157,12 @@ const AddWatchListFilmButton = ({
         watchlistId: item.id,
       }));
       deleteWatchlistFilmMutate(payload, {
-        onSettled: () => setUiLoading(false),
+        onSettled: onMutationComplete,
       });
     }
 
     if (toAdd.length === 0 && toDelete.length === 0) {
-      setTimeout(() => setUiLoading(false), UI_DELAY);
+      setTimeout(onMutationComplete, UI_DELAY);
     }
   };
 
@@ -136,6 +171,14 @@ const AddWatchListFilmButton = ({
       <Button
         onClick={(e) => {
           e.stopPropagation();
+
+          // Check if user is logged in
+          if (!getAccountDetailData) {
+            toast.info("Silakan login terlebih dahulu");
+            router.push("/login");
+            return;
+          }
+
           setOpen(true);
         }}
         disabled={uiLoading || isAdding || isDeleting}
@@ -163,25 +206,82 @@ const AddWatchListFilmButton = ({
         <DialogContent className="max-w-sm" aria-describedby={undefined}>
           <DialogTitle>Tambahkan ke Watchlist</DialogTitle>
 
-          <div className="space-y-2 mt-4">
-            {watchlistData?.map((item) => {
-              const isSelected = selected.some((w) => w.id === item.id);
-              return (
-                <div
-                  key={item.id}
-                  onClick={() => toggleSelect(item)}
-                  className={clsx(
-                    "cursor-pointer rounded-md px-4 py-3 transition flex items-center justify-between",
-                    isSelected
-                      ? "bg-[#7B61FF]/20 text-[#7B61FF]"
-                      : "hover:bg-muted"
-                  )}
-                >
-                  <span>{item.name}</span>
-                  {isSelected && <Check className="w-4 h-4" />}
-                </div>
+          <div className="space-y-4 overflow-y-auto max-h-96 dark-scrollbar mt-4">
+            {(() => {
+              const watchlists = Array.isArray(watchlistData)
+                ? watchlistData
+                : watchlistData?.data || [];
+
+              // Section berdasarkan data asli dari database, bukan dari state selected
+              const initialSelected = getInitialSelected();
+
+              const savedIn = watchlists.filter((item) =>
+                initialSelected.some((w) => w.id === item.id)
               );
-            })}
+              const recentlyUpdated = watchlists.filter(
+                (item) => !initialSelected.some((w) => w.id === item.id)
+              );
+
+              return (
+                <>
+                  {savedIn.length > 0 && (
+                    <div className="space-y-2">
+                      <h3 className="text-sm font-medium text-muted-foreground px-1">
+                        Tersimpan di
+                      </h3>
+                      {savedIn.map((item) => {
+                        const isSelected = selected.some(
+                          (w) => w.id === item.id
+                        );
+                        return (
+                          <div
+                            key={item.id}
+                            onClick={() => toggleSelect(item)}
+                            className={clsx(
+                              "cursor-pointer rounded-md px-4 py-3 transition flex items-center justify-between",
+                              isSelected
+                                ? "bg-[#7B61FF]/20 text-[#7B61FF]"
+                                : "hover:bg-muted"
+                            )}
+                          >
+                            <span>{item.name}</span>
+                            {isSelected && <Check className="w-4 h-4" />}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+
+                  {recentlyUpdated.length > 0 && (
+                    <div className="space-y-2">
+                      <h3 className="text-sm font-medium text-muted-foreground px-1">
+                        Baru Diperbarui
+                      </h3>
+                      {recentlyUpdated.map((item) => {
+                        const isSelected = selected.some(
+                          (w) => w.id === item.id
+                        );
+                        return (
+                          <div
+                            key={item.id}
+                            onClick={() => toggleSelect(item)}
+                            className={clsx(
+                              "cursor-pointer rounded-md px-4 py-3 transition flex items-center justify-between",
+                              isSelected
+                                ? "bg-[#7B61FF]/20 text-[#7B61FF]"
+                                : "hover:bg-muted"
+                            )}
+                          >
+                            <span>{item.name}</span>
+                            {isSelected && <Check className="w-4 h-4" />}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </>
+              );
+            })()}
           </div>
 
           <DialogFooter className="flex flex-col gap-2 pt-4 w-full">
