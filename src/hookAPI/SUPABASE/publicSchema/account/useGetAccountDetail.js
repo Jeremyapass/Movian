@@ -13,7 +13,7 @@ const GetAccountDetail = async () => {
   const { data, error } = await supabase
     .from("public_user")
     .select(
-      "username, profile_picture, cover_picture, bio, is_favorite_public, review_count, watchlist_count, favorite_count"
+      "id, username, profile_picture, cover_picture, bio, is_favorite_public, review_count, watchlist_count, favorite_count"
     )
     .eq("email", session.user.email)
     .single();
