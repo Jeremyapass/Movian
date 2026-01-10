@@ -11,6 +11,9 @@ import GambarCarouselLayout from "@/components/Molecules/carouselLayout/GambarCa
 import PemeranCarouselLayout from "@/components/Molecules/carouselLayout/PemeranCarouselLayout";
 import VideoCarouselLayout from "@/components/Molecules/carouselLayout/VideoCarouselLayout";
 import AddWatchListFilmButton from "@/components/Atoms/buttons/AddWatchListFilmButton";
+import { useGetMovieCacheId } from "@/hookAPI/SUPABASE/publicSchema/movieCache/useGetMovieCacheId";
+import { useGetFilmReview } from "@/hookAPI/SUPABASE/publicSchema/review/useGetFilmReview";
+import { calculateAverageRating } from "@/lib/ratingUtils";
 
 const FilmDetailLayout = ({
   watchlistData,
@@ -18,8 +21,21 @@ const FilmDetailLayout = ({
   data,
   isLoading,
   media_type,
+  tmdbMovieId,
 }) => {
-  //nnti tambahin isFavorite
+  // Fetch movie cache ID and reviews
+  const { data: movieCacheId, isLoading: isLoadingMovieCacheId } =
+    useGetMovieCacheId(tmdbMovieId);
+  const { data: reviews = [], isLoading: isLoadingReviews } =
+    useGetFilmReview(movieCacheId);
+  const averageRating = calculateAverageRating(reviews);
+
+  // Combine loading states for initial page load (without review refetch)
+  const isLoadingInitial = isLoading || isLoadingMovieCacheId;
+
+  // For review section, include review loading state
+  const isLoadingReviewSection = isLoadingInitial || isLoadingReviews;
+
   return (
     <div className="flex flex-col w-full gap-3">
       <div className="flex flex-col gap-8 w-full ">
@@ -30,19 +46,32 @@ const FilmDetailLayout = ({
               backgroundImage: `url(https://image.tmdb.org/t/p/original${data.backdrop_path})`,
             }}
           />
-        ) : (
+        ) : isLoadingInitial ? (
           // SKELETON
           <div className="relative w-full h-[60vh] rounded-3xl overflow-hidden bg-[#2f2f2f] animate-pulse" />
+        ) : (
+          // NO BACKDROP - Show MVN like profile cover
+          <div className="relative w-full h-[60vh] flex items-center justify-center bg-[#1A1A1A] rounded-[24px] overflow-hidden">
+            <span
+              className={`${fonts.clash.className} bg-gradient-to-r text-[32px] font-semibold from-[#7B61FF] to-[#FF6F91] bg-clip-text text-transparent`}
+            >
+              MVN.
+            </span>
+          </div>
         )}
 
         <div className="flex gap-6 w-full">
-          <Kiri data={data} isLoading={isLoading} />
+          <Kiri data={data} isLoading={isLoadingInitial} />
           <Kanan
             data={data}
-            isLoading={isLoading}
+            isLoading={isLoadingInitial}
             media_type={media_type}
             watchlistData={watchlistData}
             watchlistFilmData={watchlistFilmData}
+            tmdbMovieId={tmdbMovieId}
+            reviews={reviews}
+            averageRating={averageRating}
+            isLoadingReviews={isLoadingReviewSection}
           />
         </div>
       </div>
@@ -120,14 +149,25 @@ const Kanan = ({
   media_type,
   watchlistData,
   watchlistFilmData,
+  tmdbMovieId,
+  reviews,
+  averageRating,
+  isLoadingReviews,
 }) => {
   return (
     <div className="flex flex-col gap-5 w-full min-w-0">
       <div className="flex flex-col gap-4">
-        <div className="flex gap-1 items-center">
-          <RateButton rateNumber={75} clickable={false} />
-          <span className="text-sm">Skor rerata pengguna</span>
-        </div>
+        {isLoading ? (
+          <div className="flex gap-1 items-center">
+            <div className="w-[48px] h-[24px] rounded-full bg-[#2f2f2f] animate-pulse" />
+            <span className="text-sm">Skor rerata pengguna</span>
+          </div>
+        ) : (
+          <div className="flex gap-1 items-center">
+            <RateButton rateNumber={averageRating} clickable={false} />
+            <span className="text-sm">Skor rerata pengguna</span>
+          </div>
+        )}
 
         <Header data={data} isLoading={isLoading} />
 
@@ -161,7 +201,14 @@ const Kanan = ({
       />
       <VideoCarouselLayout data={data?.videos?.results} isLoading={isLoading} />
 
-      <UlasanFilmLayout />
+      <UlasanFilmLayout
+        tmdbMovieId={tmdbMovieId}
+        reviews={reviews}
+        averageRating={averageRating}
+        filmData={data}
+        media_type={media_type}
+        isLoading={isLoadingReviews}
+      />
     </div>
   );
 };
@@ -169,10 +216,10 @@ const Kanan = ({
 const Kiri = ({ data, isLoading }) => {
   return (
     <div className="flex flex-col gap-6 w-[270px] shrink-0">
-      {isLoading || !data?.poster_path ? (
+      {isLoading ? (
         /* SKELETON */
         <div className="w-[270px] h-[348px] rounded-xl bg-[#2f2f2f] animate-pulse" />
-      ) : (
+      ) : data?.poster_path ? (
         <Image
           src={`https://image.tmdb.org/t/p/w500${data.poster_path}`}
           alt="SeriesImages"
@@ -180,6 +227,15 @@ const Kiri = ({ data, isLoading }) => {
           height={348}
           className="object-cover transition-all duration-300 w-[270px] h-[348px] rounded-xl"
         />
+      ) : (
+        /* NO POSTER - Show MVN like watchlist */
+        <div className="w-[270px] h-[348px] rounded-xl bg-[#0D0D0D] flex items-center justify-center">
+          <span
+            className={`${fonts.clash.className} bg-gradient-to-r text-[32px] font-semibold from-[#7B61FF] to-[#FF6F91] bg-clip-text text-transparent`}
+          >
+            MVN.
+          </span>
+        </div>
       )}
 
       <div className="flex flex-col gap-4 bg-[#1A1A1A] p-6 justify-center rounded-xl">
@@ -213,15 +269,21 @@ const Kiri = ({ data, isLoading }) => {
                   className="flex items-center gap-2"
                 >
                   {/* Wrapper untuk masking */}
-                  <div className="w-[30px] h-[30px] rounded-full overflow-hidden">
-                    <Image
-                      src={flagUrl}
-                      alt={country.name}
-                      width={30}
-                      height={30}
-                      className="w-[30px] h-[30px] object-cover"
-                    />
-                  </div>
+                  {flagUrl ? (
+                    <div className="w-[30px] h-[30px] rounded-full overflow-hidden">
+                      <Image
+                        src={flagUrl}
+                        alt={country.name}
+                        width={30}
+                        height={30}
+                        className="w-[30px] h-[30px] object-cover"
+                      />
+                    </div>
+                  ) : (
+                    <div className="w-[30px] h-[30px] rounded-full bg-[#2F2F2F] flex items-center justify-center">
+                      <span className="text-[10px]">🌐</span>
+                    </div>
+                  )}
 
                   <p>{country.name}</p>
                 </div>
