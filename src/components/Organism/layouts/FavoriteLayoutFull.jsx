@@ -11,8 +11,11 @@ const FavoriteLayoutFull = ({
   isLoading,
   handleFilter,
   filterType,
+  currentPage,
+  onPageChange,
 }) => {
   const router = useRouter();
+  const totalPages = dataFilms?.totalPages || 1;
 
   return (
     <div className="w-full flex flex-col gap-10">
@@ -28,7 +31,7 @@ const FavoriteLayoutFull = ({
             <Card key={i} layout="layoutfull" isLoading />
           ))}
         </div>
-      ) : dataFilms.data.length === 0 ? (
+      ) : dataFilms?.data?.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-16 gap-2 text-center">
           <p
             className={`${fonts.clash.className} text-[28px] font-semibold text-gray-300`}
@@ -41,10 +44,11 @@ const FavoriteLayoutFull = ({
         </div>
       ) : (
         <div className="w-full grid grid-cols-4 md:grid-cols-5 lg:grid-cols-6 justify-items-center gap-2">
-          {dataFilms.data.map((item, index) => (
+          {dataFilms?.data?.map((item, index) => (
             <Card
               key={index}
               layout="layoutfull"
+              movieCacheId={item.movie_cache_id}
               filmName={item.movie_cache.name}
               filmReleaseDate={item.movie_cache.date_release}
               filmImages={`https://image.tmdb.org/t/p/w500${item.movie_cache.poster_path}`}
@@ -60,7 +64,11 @@ const FavoriteLayoutFull = ({
         </div>
       )}
 
-      <Pagination />
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={onPageChange}
+      />
     </div>
   );
 };
