@@ -1,16 +1,18 @@
 import React from "react";
 import { Button } from "../ui/button";
 
-const FilmFilters = ({ onClick, filterType }) => {
+const FilmFilters = ({ onClick, filterType, hideAll = false }) => {
   return (
     <div className="border-[#2E2E2E] border-[1px] gap-1 rounded-xl p-1 flex">
-      <Button
-        className={`text-white ${filterType === "all" ? "bg-[#444]" : ""}`}
-        value="all"
-        onClick={onClick}
-      >
-        Semua
-      </Button>
+      {!hideAll && (
+        <Button
+          className={`text-white ${filterType === "all" ? "bg-[#444]" : ""}`}
+          value="all"
+          onClick={onClick}
+        >
+          Semua
+        </Button>
+      )}
       <Button
         value="movie"
         className={`text-white ${filterType === "movie" ? "bg-[#444]" : ""}`}
