@@ -24,32 +24,32 @@ const PageContent = () => {
       <Banner data={popularData?.results} />
       <CarouselLayout
         type={"series"}
-        title={"POPULAR TUNGGU RIZQI"}
-        subtitle={"Film yang lagi nge-hype, jangan sampai ketinggalan!"}
+        title={"Serial Populer"}
+        subtitle={"Pilihan serial yang paling banyak ditonton dan disukai."}
         data={popularData?.results}
         onViewAllClick={() => handleViewAllClick("popular")}
         isLoading={isPopularLoading}
       />
       <CarouselLayout
         type={"series"}
-        title={"AIRING TODAY TUNGGU RIZQI"}
-        subtitle={"Film yang lagi nge-hype, jangan sampai ketinggalan!"}
+        title={"Serial Tayang Hari Ini"}
+        subtitle={"Episode terbaru yang tayang hari ini."}
         data={airingTodaySeriesData?.results}
         onViewAllClick={() => handleViewAllClick("airing-today")}
         isLoading={isAiringTodayLoading}
       />
       <CarouselLayout
         type={"series"}
-        title={"ON THE AIR TUNGGU RIZQI"}
-        subtitle={"TUNGGU RIZQI"}
+        title={"Serial Sedang Tayang  "}
+        subtitle={"Serial yang sedang tayang saat ini."}
         data={onTheAirData?.results}
         isLoading={isOnTheAirLoading}
         onViewAllClick={() => handleViewAllClick("on-the-air")}
       />
       <CarouselLayout
         type={"series"}
-        title={"TOP RATED SERIES TUNGGU RIZQI"}
-        subtitle={"TUNGGU RIZQI"}
+        title={"Disukai Penonton"}
+        subtitle={"Serial yang paling disukai penonton."}
         data={topRatedData?.results}
         isLoading={isTopRatedLoading}
         onViewAllClick={() => handleViewAllClick("top-rated")}

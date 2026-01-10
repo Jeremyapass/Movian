@@ -25,32 +25,32 @@ const PageContent = () => {
       <Banner data={nowPlayingData?.results} />
       <CarouselLayout
         type={"movie"}
-        title={"NOW PLAYING TUNGGU RIZQI"}
-        subtitle={"Film yang lagi nge-hype, jangan sampai ketinggalan!"}
+        title={"Film Sedang Tayang"}
+        subtitle={"Film terbaru yang sedang tayang di bioskop."}
         data={nowPlayingData?.results}
         isLoading={isNowPlayingLoading}
         onViewAllClick={() => handleViewAllClick("now-playing")}
       />
       <CarouselLayout
         type={"movie"}
-        title={"Lagi ramai dibicarakan"}
-        subtitle={"Film yang lagi nge-hype, jangan sampai ketinggalan!"}
+        title={"Film Populer"}
+        subtitle={"Pilihan film yang paling banyak ditonton dan disukai."}
         data={popularData?.results}
         isLoading={isPopularLoading}
         onViewAllClick={() => handleViewAllClick("popular")}
       />
       <CarouselLayout
         type={"movie"}
-        title={"UPCOMING TUNGGU RIZQI"}
-        subtitle={"TUNGGU RIZQI"}
+        title={"Rilis Terbaru"}
+        subtitle={"Film yang baru dirilis."}
         data={upcomingData?.results}
         isLoading={isUpcomingLoading}
         onViewAllClick={() => handleViewAllClick("upcoming")}
       />
       <CarouselLayout
         type={"movie"}
-        title={"TOP RATE TUNGGU RIZQI"}
-        subtitle={"TUNGGU RIZQI"}
+        title={"Disukai Penonton"}
+        subtitle={"Film yang paling disukai penonton."}
         data={topRatedData?.results}
         isLoading={isTopRatedLoading}
         onViewAllClick={() => handleViewAllClick("top-rated")}
