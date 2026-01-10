@@ -2,9 +2,11 @@
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 
-const GetUpcoming = () => {
+const GetUpcoming = (page = 1) => {
   return axios
-    .get("/api/TMDB/movieList/get-up-coming")
+    .get("/api/TMDB/movieList/get-up-coming", {
+      params: { page },
+    })
     .then((res) => res.data)
     .catch((error) => {
       // optional: log atau lempar error
@@ -12,10 +14,10 @@ const GetUpcoming = () => {
     });
 };
 
-export const UseGetUpcoming = (enable = true) => {
+export const UseGetUpcoming = (enable = true, page = 1) => {
   return useQuery({
-    queryKey: ["getUpcoming"],
-    queryFn: GetUpcoming,
+    queryKey: ["getUpcoming", page],
+    queryFn: () => GetUpcoming(page),
     enabled: enable,
   });
 };
