@@ -3,7 +3,14 @@ import Pagination from "@/components/Atoms/Pagination";
 import { useRouter } from "next/navigation";
 import React from "react";
 
-const FilmLayoutFull = ({ data, isLoading, type }) => {
+const FilmLayoutFull = ({
+  data,
+  isLoading,
+  type,
+  currentPage = 1,
+  totalPages = 1,
+  onPageChange,
+}) => {
   const route = useRouter();
   const mediaConfig = {
     movie: {
@@ -17,7 +24,7 @@ const FilmLayoutFull = ({ data, isLoading, type }) => {
       path: (id) => `/series/series-detail/${id}`,
     },
     X: {
-      name: (d) => d.x_name,  
+      name: (d) => d.x_name,
       date: (d) => d.x_date,
       path: (id) => `/x/x-detail/${id}`,
     },
@@ -33,19 +40,29 @@ const FilmLayoutFull = ({ data, isLoading, type }) => {
           ? [...Array(12)].map((_, i) => (
               <Card layout={"layoutfull"} key={i} isLoading={true} />
             ))
-          : data?.map((data, index) => (
-              <Card
-                layout={"layoutfull"}
-                key={index}
-                filmName={config.name(data)}
-                filmReleaseDate={config.date(data)}
-                filmImages={`https://image.tmdb.org/t/p/w500${data.poster_path}`}
-                onClick={() => route.push(config.path(data.id))}
-              />
-            ))}
+          : data?.map((data, index) => {
+              const imageUrl = data.poster_path
+                ? `https://image.tmdb.org/t/p/w500${data.poster_path}`
+                : null;
+              return (
+                <Card
+                  layout={"layoutfull"}
+                  key={index}
+                  tmdbMovieId={data.id}
+                  filmName={config.name(data)}
+                  filmReleaseDate={config.date(data)}
+                  filmImages={imageUrl}
+                  onClick={() => route.push(config.path(data.id))}
+                />
+              );
+            })}
       </div>
 
-      <Pagination />
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={onPageChange}
+      />
     </div>
   );
 };
