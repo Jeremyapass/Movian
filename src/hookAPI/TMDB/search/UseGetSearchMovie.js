@@ -1,18 +1,12 @@
-import { useMutation } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 
-const GetSearchMovie = ([query]) => {
+const GetSearchMovie = (query, page) => {
   return axios
-    .get(`${process.env.API_URL_TMDB}/search/movie`, {
+    .get("/api/TMDB/search/get-search-movie", {
       params: {
-        api_key: process.env.API_KEY_TMDB,
-        query: query,
-        include_adult: true,
-        // language : "en-US",
-        // primary_release_year : new Date().getFullYear(),
-        // page: 1,
-        // region : "US",
-        // year : new Date().getFullYear(),
+        query,
+        page,
       },
     })
     .then((res) => res.data)
@@ -21,9 +15,10 @@ const GetSearchMovie = ([query]) => {
     });
 };
 
-export const UseGetSearchMovie = () => {
-  return useMutation({
-    mutationFn: GetSearchMovie,
-    mutationKey: ["getSearchMovie"],
+export const UseGetSearchMovie = (query, page = 1, enabled = true) => {
+  return useQuery({
+    queryKey: ["getSearchMovie", query, page],
+    queryFn: () => GetSearchMovie(query, page),
+    enabled: enabled && !!query,
   });
 };
