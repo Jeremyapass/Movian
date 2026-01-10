@@ -15,17 +15,17 @@ export const FavoriteProvider = ({ children }) => {
   const {
     data: getAllFavoriteFilmsData,
     isLoading: isGetAllFavoriteFilmsLoading,
-  } = useGetAllFavoriteFilms({ enabled: filterType === "all" });
+  } = useGetAllFavoriteFilms({ page, enabled: filterType === "all" });
 
   const {
     data: getAllFavoriteMoviesData,
     isLoading: isGetAllFavoriteMoviesLoading,
-  } = useGetAllFavoriteMovies({ enabled: filterType === "movie" });
+  } = useGetAllFavoriteMovies({ page, enabled: filterType === "movie" });
 
   const {
     data: getAllFavoriteSeriesData,
     isLoading: isGetAllFavoriteSeriesLoading,
-  } = useGetAllFavoriteSeries({ enabled: filterType === "series" });
+  } = useGetAllFavoriteSeries({ page, enabled: filterType === "series" });
 
   const { data: getTotalFavoriteData, isLoading: isTotalFavoriteLoading } =
     useGetTotalFilmsFavorite();
@@ -37,9 +37,17 @@ export const FavoriteProvider = ({ children }) => {
     isTotalFavoriteLoading;
 
   const dataFilms = useMemo(() => {
-    if (filterType === "movie") return getAllFavoriteMoviesData;
-    if (filterType === "series") return getAllFavoriteSeriesData;
-    return getAllFavoriteFilmsData;
+    if (filterType === "movie")
+      return (
+        getAllFavoriteMoviesData || { data: [], totalPages: 1, totalItems: 0 }
+      );
+    if (filterType === "series")
+      return (
+        getAllFavoriteSeriesData || { data: [], totalPages: 1, totalItems: 0 }
+      );
+    return (
+      getAllFavoriteFilmsData || { data: [], totalPages: 1, totalItems: 0 }
+    );
   }, [
     filterType,
     getAllFavoriteFilmsData,
@@ -50,6 +58,11 @@ export const FavoriteProvider = ({ children }) => {
   const handleFilter = (type) => {
     setFilterType(type);
     setPage(1); // reset pagination
+  };
+
+  const handlePageChange = (newPage) => {
+    setPage(newPage);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   return (
@@ -65,6 +78,7 @@ export const FavoriteProvider = ({ children }) => {
         isLoading,
 
         handleFilter,
+        handlePageChange,
       }}
     >
       {children}
