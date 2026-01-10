@@ -1,30 +1,36 @@
-import { supabase } from "@/lib/supabaseClient";
 import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/lib/supabaseClient";
 
-//BELUM YA. TAMBAHIN PARAMS NYA NANTI, TRUS KASIH KE GPT
-const GetFilmReview = async () => {
-  const {
-    data: { user },
-    error: authError,
-  } = await supabase.auth.getUser();
+const GetFilmReview = async ({ movieId }) => {
+  if (!movieId) return [];
 
-  if (authError) throw authError;
-  if (!user?.id) return null;
+  const { data, error } = await supabase
+    .from("reviewed_films")
+    .select(
+      `
+      movie_cache_id,
+      comment,
+      rating,
+      created_at,
+      user_id,
+      public_user (
+        username
+      )
+    `
+    )
+    .eq("movie_cache_id", movieId);
 
-  let query = supabase
-    .from("favorite_movie")
-    .select("tmdb_movie_id, type")
-    .eq("user_id", user.id);
-
-  const { data, error } = await query;
   if (error) throw error;
 
-  return data;
+  return data ?? [];
 };
 
-export const useGetFilmReview = () => {
+export default GetFilmReview;
+
+export const useGetFilmReview = (movieId) => {
   return useQuery({
-    queryKey: ["get-film-review"],
-    queryFn: () => GetFilmReview(),
+    queryKey: ["get-film-review", movieId],
+    queryFn: () => GetFilmReview({ movieId }),
+    enabled: !!movieId,
   });
 };
