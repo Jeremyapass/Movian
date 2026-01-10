@@ -107,6 +107,7 @@ const FavoriteCarouselLayout = ({ title, data, isLoading }) => {
             return (
               <Card
                 key={item.id}
+                movieCacheId={item.movie_cache_id}
                 filmName={item.movie_cache.name}
                 filmReleaseDate={item.movie_cache.date_release}
                 filmImages={`https://image.tmdb.org/t/p/w500${item.movie_cache.poster_path}`}
