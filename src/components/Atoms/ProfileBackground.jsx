@@ -15,6 +15,7 @@ import Image from "next/image";
 import { useUpdateAccountCoverPicture } from "@/hookAPI/SUPABASE/publicSchema/account/useUpdateAccontCoverPicture";
 import { supabase } from "@/lib/supabaseClient";
 import { useRoot } from "@/provider/rootProvider";
+import { toast } from "react-toastify";
 
 const ProfileBackground = () => {
   const fileInputRef = useRef(null);
@@ -46,14 +47,14 @@ const ProfileBackground = () => {
         "image/png",
       ];
       if (!allowedTypes.includes(file.type)) {
-        alert("Tipe file tidak didukung! Gunakan JPG, JPEG, WEBP, atau PNG.");
+        toast.warning("Tipe file tidak didukung! Gunakan JPG, JPEG, WEBP, atau PNG.");
         return;
       }
 
       // Validasi ukuran file (800KB = 800 * 1024 bytes)
       const maxSize = 800 * 1024;
       if (file.size > maxSize) {
-        alert("Ukuran file maksimal 800kb!");
+        toast.warning("Ukuran file terlalu besar! Maksimal 800KB.");
         return;
       }
 
@@ -108,7 +109,7 @@ const ProfileBackground = () => {
 
   const handleSubmit = async () => {
     if (!croppedImageBlob) {
-      alert("Silakan pilih gambar terlebih dahulu!");
+      toast.warning("Silakan pilih gambar terlebih dahulu!");
       return;
     }
 
@@ -125,7 +126,7 @@ const ProfileBackground = () => {
         });
 
       if (error) {
-        alert("Gagal upload gambar: " + error.message);
+        toast.error("Gagal upload gambar: " + error.message);
         return;
       }
 
@@ -142,13 +143,13 @@ const ProfileBackground = () => {
           },
           onError: (error) => {
             console.error("Error updating cover picture:", error);
-            alert("Gagal update cover picture!");
+            toast.error("Gagal update cover picture!");
           },
         }
       );
     } catch (error) {
       console.error("Error uploading image:", error);
-      alert("Terjadi kesalahan saat upload gambar!");
+      toast.error("Terjadi kesalahan saat upload gambar!");
     }
   };
 

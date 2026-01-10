@@ -22,6 +22,7 @@ import React, { useState, useRef } from "react";
 import Image from "next/image";
 import { useAddWatchlist } from "@/hookAPI/SUPABASE/publicSchema/watchlist/useAddWatchlist";
 import { supabase } from "@/lib/supabaseClient";
+import { toast } from "react-toastify";
 
 const AddWatchListButton = () => {
   const [open, setOpen] = useState(false);
@@ -49,14 +50,14 @@ const AddWatchListButton = () => {
         "image/png",
       ];
       if (!allowedTypes.includes(file.type)) {
-        alert("Tipe file tidak didukung! Gunakan JPG, JPEG, WEBP, atau PNG.");
+        toast.warning("Tipe file tidak didukung! Gunakan JPG, JPEG, WEBP, atau PNG.");
         return;
       }
 
-      // Validasi ukuran file (300KB = 300 * 1024 bytes)
-      const maxSize = 300 * 1024;
+      // Validasi ukuran file (800KB = 800 * 1024 bytes)
+      const maxSize = 800 * 1024;
       if (file.size > maxSize) {
-        alert("Ukuran file maksimal 300kb!");
+        toast.warning("Ukuran file terlalu besar! Maksimal 800KB.");
         return;
       }
 
@@ -115,13 +116,13 @@ const AddWatchListButton = () => {
   const handleSubmit = async () => {
     // Validasi: name tidak boleh kosong
     if (!name.trim()) {
-      alert("Nama watchlist tidak boleh kosong!");
+      toast.warning("Nama watchlist tidak boleh kosong!");
       return;
     }
 
     // Validasi: privacy harus dipilih
     if (!privacy) {
-      alert("Silakan pilih privasi watchlist!");
+      toast.warning("Silakan pilih privasi watchlist!");
       return;
     }
 
@@ -141,7 +142,7 @@ const AddWatchListButton = () => {
           });
 
         if (error) {
-          alert("Gagal upload gambar: " + error.message);
+          toast.error("Gagal upload gambar: " + error.message);
           return;
         }
 
@@ -153,7 +154,7 @@ const AddWatchListButton = () => {
         pictureUrl = publicUrl;
       } catch (error) {
         console.error("Error uploading image:", error);
-        alert("Terjadi kesalahan saat upload gambar!");
+        toast.error("Terjadi kesalahan saat upload gambar!");
         return;
       }
     }
@@ -167,7 +168,7 @@ const AddWatchListButton = () => {
 
     addWatchlistMutate(payload, {
       onSuccess: () => {
-        console.log("SUKSES");
+        toast.success("Watchlist berhasil ditambahkan!");
         handleCloseDialog();
       },
     });

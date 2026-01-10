@@ -16,6 +16,7 @@ import Image from "next/image";
 import { useUpdateAccountDetail } from "@/hookAPI/SUPABASE/publicSchema/account/useUpdateAccounDetail";
 import { supabase } from "@/lib/supabaseClient";
 import { useRoot } from "@/provider/rootProvider";
+import { toast } from "react-toastify";
 
 const UpdateProfileButton = () => {
   const [open, setOpen] = useState(false);
@@ -55,14 +56,14 @@ const UpdateProfileButton = () => {
         "image/png",
       ];
       if (!allowedTypes.includes(file.type)) {
-        alert("Tipe file tidak didukung! Gunakan JPG, JPEG, WEBP, atau PNG.");
+        toast.warning("Tipe file tidak didukung! Gunakan JPG, JPEG, WEBP, atau PNG.");
         return;
       }
 
       // Validasi ukuran file (800KB = 800 * 1024 bytes)
       const maxSize = 800 * 1024;
       if (file.size > maxSize) {
-        alert("Ukuran file maksimal 800kb!");
+        toast.warning("Ukuran file maksimal 800kb!");
         return;
       }
 
@@ -120,7 +121,7 @@ const UpdateProfileButton = () => {
   const handleSubmit = async () => {
     // Validasi: username tidak boleh kosong
     if (!username.trim()) {
-      alert("Username tidak boleh kosong!");
+      toast.warning("Username tidak boleh kosong!");
       return;
     }
 
@@ -141,7 +142,7 @@ const UpdateProfileButton = () => {
           });
 
         if (error) {
-          alert("Gagal upload gambar: " + error.message);
+          toast.error("Gagal upload gambar: " + error.message);
           return;
         }
 
@@ -153,7 +154,7 @@ const UpdateProfileButton = () => {
         profilePictureUrl = publicUrl;
       } catch (error) {
         console.error("Error uploading image:", error);
-        alert("Terjadi kesalahan saat upload gambar!");
+        toast.error("Terjadi kesalahan saat upload gambar!");
         return;
       }
     }
