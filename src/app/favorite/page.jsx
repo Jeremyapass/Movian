@@ -10,6 +10,8 @@ const PageContent = () => {
     isLoading,
     handleFilter,
     filterType,
+    page,
+    handlePageChange,
   } = useFavorite();
 
   return (
@@ -19,6 +21,8 @@ const PageContent = () => {
       isLoading={isLoading}
       handleFilter={handleFilter}
       filterType={filterType}
+      currentPage={page}
+      onPageChange={handlePageChange}
     />
   );
 };
