@@ -1,9 +1,12 @@
 import { supabase } from "@/lib/supabaseClient";
 import { useQuery } from "@tanstack/react-query";
 
+const ITEM_PER_PAGE = 30;
+
 export const GetAllWatchlistFilm = async ({ watchlistId, tmdbId, page }) => {
   // ⭐ Check array length juga
-  if (!watchlistId || watchlistId.length === 0) return [];
+  if (!watchlistId || watchlistId.length === 0)
+    return { data: [], totalPages: 1, totalItems: 0 };
 
   const {
     data: { user },
@@ -11,7 +14,7 @@ export const GetAllWatchlistFilm = async ({ watchlistId, tmdbId, page }) => {
   } = await supabase.auth.getUser();
 
   if (authError) throw authError;
-  if (!user?.id) return [];
+  if (!user?.id) return { data: [], totalPages: 1, totalItems: 0 };
 
   let query = supabase
     .from("watchlist_films")
@@ -42,11 +45,26 @@ export const GetAllWatchlistFilm = async ({ watchlistId, tmdbId, page }) => {
     query = query.eq("movie_cache.tmdb_movie_id", tmdbId);
   }
 
-  const { data, error } = await query;
+  if (page !== undefined) {
+    const from = (page - 1) * ITEM_PER_PAGE;
+    const to = from + ITEM_PER_PAGE - 1;
+    query = query.range(from, to);
+  }
+
+  const { data, error, count } = await query;
 
   if (error) throw error;
 
-  return data;
+  if (page === undefined) {
+    return { data, totalPages: 1, totalItems: data?.length ?? 0 };
+  }
+
+  return {
+    data,
+    currentPage: page,
+    totalPages: Math.ceil((count ?? 0) / ITEM_PER_PAGE),
+    totalItems: count ?? 0,
+  };
 };
 
 export const useGetAllWatchlistFilm = ({
@@ -59,6 +77,7 @@ export const useGetAllWatchlistFilm = ({
     queryKey: ["get-all-watchlist-films", "films", watchlistId, tmdbId, page],
     queryFn: () => GetAllWatchlistFilm({ watchlistId, tmdbId, page }),
     keepPreviousData: true,
+    placeholderData: (previousData) => previousData,
     enabled,
   });
 };
