@@ -11,29 +11,24 @@ const GRADIENT_MAP = {
   100: "bg-[linear-gradient(120deg,#7B61FF_0%,#FF6F91_100%)]",
 };
 
-const VARIANT_MAP = {
-  0: "rateRed",
-  25: "rateRed",
-  50: "rateYellow",
-  75: "ratePurple",
-  100: "ratePurple",
-};
+const VARIANT_MAP = Array.from({ length: 101 }, (_, i) => {
+  if (i >= 0 && i <= 24) return "rateRed";
+  if (i >= 25 && i <= 49) return "rateRed";
+  if (i >= 50 && i <= 74) return "rateYellow";
+  if (i >= 75 && i <= 100) return "ratePurple";
+}).reduce((acc, variant, index) => {
+  acc[index] = variant;
+  return acc;
+}, {});
 
-const RateButton = ({ rateNumber, clickable = true }) => {
-  const [isActive, setIsActive] = useState(false);
+const RateButton = ({
+  rateNumber,
+  clickable = true,
+  onClick,
+  isActive = false,
+}) => {
   const wrapperRef = useRef(null);
   const blackBoxRef = useRef(null);
-
-  useEffect(() => {
-    function handleClickOutside(e) {
-      if (wrapperRef.current && !wrapperRef.current.contains(e.target)) {
-        setIsActive(false);
-      }
-    }
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
 
   // GSAP Animation
   useEffect(() => {
@@ -45,9 +40,11 @@ const RateButton = ({ rateNumber, clickable = true }) => {
     });
   }, [isActive]);
 
-  const handleClick = () => {
+  const handleClick = (e) => {
     if (!clickable) return;
-    setIsActive((prev) => !prev);
+    if (onClick) {
+      onClick(e);
+    }
   };
 
   // ❌ Jika tidak clickable → tampilkan tombol saja
@@ -84,7 +81,7 @@ const RateButton = ({ rateNumber, clickable = true }) => {
             className="z-30"
             onClick={(e) => {
               e.stopPropagation();
-              handleClick();
+              handleClick(e);
             }}
           >
             {rateNumber}
