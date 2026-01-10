@@ -15,6 +15,8 @@ const PageContent = () => {
     isPopularLoading,
     isUpcomingLoading,
     isTopRatedLoading,
+    currentPage,
+    handlePageChange,
   } = useMovies();
 
   const categoryMap = {
@@ -31,13 +33,29 @@ const PageContent = () => {
     "top-rated": isTopRatedLoading,
   };
 
+  const totalPagesMap = {
+    "now-playing": nowPlayingData?.total_pages,
+    popular: popularData?.total_pages,
+    upcoming: upcomingData?.total_pages,
+    "top-rated": topRatedData?.total_pages,
+  };
+
   const selectedData = categoryMap[movieCategory];
   const isLoading = loadingMap[movieCategory];
+  // TMDB API has a maximum limit of 500 pages
+  const totalPages = Math.min(totalPagesMap[movieCategory] || 1, 500);
 
   // console.log('now playing data', nowPlayingData)
 
   return (
-    <FilmLayoutFull data={selectedData} isLoading={isLoading} type="movie" />
+    <FilmLayoutFull
+      data={selectedData}
+      isLoading={isLoading}
+      type="movie"
+      currentPage={currentPage}
+      totalPages={totalPages}
+      onPageChange={handlePageChange}
+    />
   );
 };
 

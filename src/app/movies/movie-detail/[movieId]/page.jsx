@@ -10,26 +10,29 @@ const PageContent = () => {
   const { movieId } = useParams();
   const { data: movieDetailsData, isLoading: isMovieDetailsLoading } =
     useGetMoviesDetails(movieId);
-  
+
   const { data: getAllWatchlistData, isLoading: isWatchlistLoading } =
     useGetWatchlist();
-    
-  const watchlistIds = getAllWatchlistData?.map((watchlist) => watchlist.id);
-  
+
+  const watchlistIds = getAllWatchlistData?.data?.map(
+    (watchlist) => watchlist.id
+  );
+
   const { data: getAllWatchlistFilmData, isLoading: isWatchlistFilmLoading } =
     useGetAllWatchlistFilm({
       watchlistId: watchlistIds,
       tmdbId: movieId,
-      enabled: !!watchlistIds && watchlistIds.length > 0, 
+      enabled: !!watchlistIds && watchlistIds.length > 0,
     });
 
   return (
     <div className=" w-full">
       <FilmDetailLayout
-        watchlistData={getAllWatchlistData}
+        watchlistData={getAllWatchlistData?.data}
         watchlistFilmData={getAllWatchlistFilmData}
         media_type="movie"
         data={movieDetailsData}
+        tmdbMovieId={movieId}
         isLoading={
           isMovieDetailsLoading || isWatchlistLoading || isWatchlistFilmLoading
         }
