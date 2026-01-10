@@ -1,4 +1,4 @@
-'use client'
+"use client";
 import { Search } from "lucide-react";
 import React, { useRef, useState, useEffect } from "react";
 import {
@@ -8,10 +8,12 @@ import {
 } from "../ui/input-group";
 import gsap from "gsap";
 import clsx from "clsx";
-import { set } from "react-hook-form";
+import { useRouter } from "next/navigation";
 
 const SearchBar = () => {
   const [isActive, setIsActive] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const router = useRouter();
 
   const buttonRef = useRef(null);
   const inputWrapperRef = useRef(null);
@@ -70,6 +72,21 @@ const SearchBar = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [isActive]);
 
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      router.push(`/search-result?q=${encodeURIComponent(searchQuery)}`);
+      closeSearch();
+      setSearchQuery("");
+    }
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === "Enter") {
+      handleSearch(e);
+    }
+  };
+
   return (
     <InputGroup
       ref={containerRef}
@@ -85,13 +102,22 @@ const SearchBar = () => {
           ref={inputWrapperRef}
           placeholder="Cari film atau series"
           autoFocus
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          onKeyPress={handleKeyPress}
         />
       )}
 
       <InputGroupAddon
         ref={buttonRef}
-        className={clsx(isActive ? "" : "p-4 cursor-pointer")}
-        onClick={!isActive ? () => setIsActive(true) : undefined}
+        className={clsx(isActive ? "cursor-pointer" : "p-4 cursor-pointer")}
+        onClick={
+          isActive && searchQuery.trim()
+            ? handleSearch
+            : !isActive
+            ? () => setIsActive(true)
+            : undefined
+        }
       >
         <Search />
       </InputGroupAddon>
