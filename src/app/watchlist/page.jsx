@@ -4,12 +4,23 @@ import { useWatchlist, WatchlistProvider } from "@/provider/watchlistProvider";
 import React from "react";
 
 const PageContent = () => {
-  const { getWatchlistData, isWatchlistLoading } = useWatchlist();
+  const {
+    getWatchlistData,
+    isWatchlistLoading,
+    currentPage,
+    totalPages,
+    handlePageChange,
+    totalCount,
+  } = useWatchlist();
 
   return (
     <WatchlistLayoutFull
       data={getWatchlistData}
       isLoading={isWatchlistLoading}
+      currentPage={currentPage}
+      totalPages={totalPages}
+      onPageChange={handlePageChange}
+      totalCount={totalCount}
     />
   );
 };

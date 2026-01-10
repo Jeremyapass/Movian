@@ -8,9 +8,15 @@ import { useParams } from "next/navigation";
 import React from "react";
 
 const PageContent = () => {
-  const { dataFilms, isLoading, handleFilter, filterType, getWatchlistData } =
-    useWatchlistFilm();
-
+  const {
+    dataFilms,
+    isLoading,
+    handleFilter,
+    filterType,
+    getWatchlistData,
+    page,
+    handlePageChange,
+  } = useWatchlistFilm();
 
   return (
     <WatchlistFilmLayoutFull
@@ -19,6 +25,8 @@ const PageContent = () => {
       isLoading={isLoading}
       handleFilter={handleFilter}
       filterType={filterType}
+      currentPage={page}
+      onPageChange={handlePageChange}
     />
   );
 };
