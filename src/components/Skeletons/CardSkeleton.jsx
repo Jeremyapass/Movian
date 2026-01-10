@@ -21,7 +21,6 @@ const CardSkeleton = ({ layout }) => {
 
       {/* Text Section */}
       <div className="flex flex-col min-h-[120px] gap-3">
-        <div className="w-[50px] h-[24px] rounded-full bg-[#2f2f2f]" />
         <div className="h-[28px] w-full max-w-[200px] rounded-md bg-[#2f2f2f]" />
         <div className="h-[18px] w-full max-w-[120px] rounded-md bg-[#2f2f2f]" />
       </div>
