@@ -9,6 +9,9 @@ import { useAddFavoriteMovies } from "@/hookAPI/SUPABASE/publicSchema/favorite/u
 import { useDeleteFavoriteMovies } from "@/hookAPI/SUPABASE/publicSchema/favorite/useDeleteFavorite";
 import { useGetAllFavoriteMovies } from "@/hookAPI/SUPABASE/publicSchema/favorite/useGetAllFavoriteMovies";
 import { useGetAllFavoriteSeries } from "@/hookAPI/SUPABASE/publicSchema/favorite/useGetAllFavoriteSeries";
+import { useRoot } from "@/provider/rootProvider";
+import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
 
 const UI_DELAY = 400;
 
@@ -22,6 +25,8 @@ const AddFavButton = ({
   //isFavorite,
 }) => {
   const starRef = useRef(null);
+  const { getAccountDetailData } = useRoot();
+  const router = useRouter();
 
   const { data: favoriteData, isLoading: isFavoriteLoading } =
     type === "movie"
@@ -68,6 +73,14 @@ const AddFavButton = ({
 
   const handleClick = (e) => {
     e.stopPropagation();
+
+    // Check if user is logged in
+    if (!getAccountDetailData) {
+      toast.info("Silakan login terlebih dahulu");
+      router.push("/login");
+      return;
+    }
+
     if (favLoading || uiLoading) return;
 
     setUiLoading(true);
