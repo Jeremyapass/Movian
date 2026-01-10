@@ -3,7 +3,7 @@ import axios from "axios";
 
 const GetMovieListGenre = () => {
   return axios
-    .get("/api/TMDB/genre")
+    .get("/api/TMDB/genre/get-genre-movies")
     .then((res) => res.data)
     .catch((error) => {
       // optional: log atau lempar error
