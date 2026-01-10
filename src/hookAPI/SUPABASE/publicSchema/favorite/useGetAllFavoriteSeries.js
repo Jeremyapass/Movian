@@ -29,7 +29,8 @@ const GetAllFavoriteSeries = async ({ page, tmdbId } = {}) => {
       { count: page ? "exact" : undefined } // count hanya kalau paginate
     )
     .eq("user_id", user.id)
-    .eq("movie_cache.type", "series");
+    .eq("movie_cache.type", "series")
+    .order("created_at", { ascending: false });
 
   if (tmdbId !== undefined && tmdbId !== null) {
     query = query.eq("movie_cache.tmdb_movie_id", tmdbId);
@@ -59,7 +60,6 @@ const GetAllFavoriteSeries = async ({ page, tmdbId } = {}) => {
   };
 };
 
-//TMDBID di sini opsional, dipakai untuk cek apakah film tertentu ada di favorite (ini v2 aja biar bisa ditampilin di Main Page)
 export const useGetAllFavoriteSeries = ({
   page,
   tmdbId,
@@ -68,6 +68,7 @@ export const useGetAllFavoriteSeries = ({
   useQuery({
     queryKey: ["get-all-favorite", "series", page, tmdbId],
     queryFn: () => GetAllFavoriteSeries({ page, tmdbId }),
-    keepPreviousData: true,
+    placeholderData: (previousData) => previousData,
+    refetchOnMount: "always",
     enabled,
   });

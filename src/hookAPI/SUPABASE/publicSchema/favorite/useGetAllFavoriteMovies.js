@@ -29,7 +29,8 @@ const GetAllFavoriteMovies = async ({ page, tmdbId } = {}) => {
       { count: page ? "exact" : undefined }
     )
     .eq("user_id", user.id)
-    .eq("movie_cache.type", "movie");
+    .eq("movie_cache.type", "movie")
+    .order("created_at", { ascending: false });
 
   if (tmdbId !== undefined && tmdbId !== null) {
     query = query.eq("movie_cache.tmdb_movie_id", tmdbId);
@@ -58,8 +59,6 @@ const GetAllFavoriteMovies = async ({ page, tmdbId } = {}) => {
   };
 };
 
-// ✅ Hook pakai object parameter
-//TMDBID di sini opsional, dipakai untuk cek apakah film tertentu ada di favorite (ini v2 aja biar bisa ditampilin di Main Page)
 export const useGetAllFavoriteMovies = ({
   page,
   tmdbId,
@@ -68,6 +67,7 @@ export const useGetAllFavoriteMovies = ({
   useQuery({
     queryKey: ["get-all-favorite", "movies", page, tmdbId],
     queryFn: () => GetAllFavoriteMovies({ page, tmdbId }),
-    keepPreviousData: true,
+    placeholderData: (previousData) => previousData,
+    refetchOnMount: "always",
     enabled,
   });

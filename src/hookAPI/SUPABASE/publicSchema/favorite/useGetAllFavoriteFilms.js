@@ -1,7 +1,7 @@
 import { supabase } from "@/lib/supabaseClient";
 import { useQuery } from "@tanstack/react-query";
 
-const PAGE_SIZE = 30;
+const ITEM_PER_PAGE = 30;
 
 const GetAllFavoriteFilms = async ({ page }) => {
   const {
@@ -28,11 +28,12 @@ const GetAllFavoriteFilms = async ({ page }) => {
     `,
       { count: page ? "exact" : undefined }
     )
-    .eq("user_id", user.id);
+    .eq("user_id", user.id)
+    .order("created_at", { ascending: false });
 
   if (page !== undefined) {
-    const from = (page - 1) * PAGE_SIZE;
-    const to = from + PAGE_SIZE - 1;
+    const from = (page - 1) * ITEM_PER_PAGE;
+    const to = from + ITEM_PER_PAGE - 1;
     query = query.range(from, to);
   }
 
@@ -47,19 +48,19 @@ const GetAllFavoriteFilms = async ({ page }) => {
     };
   }
 
-  // 🔥 MODE PAGINATION
   return {
     data,
     currentPage: page,
-    totalPages: Math.ceil((count ?? 0) / PAGE_SIZE),
+    totalPages: Math.ceil((count ?? 0) / ITEM_PER_PAGE),
     totalItems: count ?? 0,
   };
 };
 
-export const useGetAllFavoriteFilms = ({page, enabled = true}) =>
+export const useGetAllFavoriteFilms = ({ page, enabled = true }) =>
   useQuery({
     queryKey: ["get-all-favorite", "films", page],
     queryFn: () => GetAllFavoriteFilms({ page }),
-    keepPreviousData: true,
+    placeholderData: (previousData) => previousData,
+    refetchOnMount: "always",
     enabled,
   });
