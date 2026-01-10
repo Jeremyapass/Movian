@@ -1,39 +1,21 @@
 "use client";
 import { fonts } from "@/fonts/fonts";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Button } from "../ui/button";
 import SearchBar from "../Atoms/SearchBar";
 import { usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
 import ahay from "../../../public/avatar-image.png";
-import { supabase } from "@/lib/supabaseClient";
 import clsx from "clsx";
 import NavbarSkeleton from "../Skeletons/NavbarSkeleton";
+import { useGetAccountDetail } from "@/hookAPI/SUPABASE/publicSchema/account/useGetAccountDetail";
 
 const Navbar = () => {
   const currentPath = usePathname();
   const route = useRouter();
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  const { data: accountData, isLoading } = useGetAccountDetail();
 
-  useEffect(() => {
-    const checkAuth = async () => {
-      const { data } = await supabase.auth.getSession();
-      setIsLoggedIn(!!data.session);
-      setIsLoading(false);
-    };
-
-    checkAuth();
-
-    // Listen session changes dari Supabase langsung
-    const { data: listener } = supabase.auth.onAuthStateChange(() => {
-      checkAuth();
-    });
-
-    return () => {
-      listener.subscription.unsubscribe();
-    };
-  }, []);
+  const isLoggedIn = !!accountData;
 
   if (currentPath.includes("/login") || currentPath.includes("/signup")) {
     return null;
@@ -48,7 +30,7 @@ const Navbar = () => {
       <div className="flex items-center justify-center pl-[24px] pr-[8px] py-[8px] bg-[#1A1A1A] rounded-[16px] gap-[28px]">
         <span
           className={`${fonts.clash.className} cursor-pointer font-semibold text-[24px] bg-gradient-to-r from-[#7B61FF] to-[#FF6F91] bg-clip-text text-transparent`}
-          onClick={() => route.push('/')}
+          onClick={() => route.push("/")}
         >
           MVN.
         </span>
@@ -136,14 +118,25 @@ const Navbar = () => {
           >
             Favorite
           </Button>
-          <Image
-            onClick={() => route.push("/profile")}
-            className=""
-            src={ahay}
-            alt="Profile"
-            width={40}
-            height={40}
-          />
+          {accountData?.profile_picture ? (
+            <Image
+              onClick={() => route.push("/profile")}
+              className="rounded-full cursor-pointer object-cover"
+              src={accountData.profile_picture}
+              alt="Profile"
+              width={40}
+              height={40}
+            />
+          ) : (
+            <div className="rounded-full cursor-pointer flex items-center justify-center w-[40px] h-[40px] bg-[#2F2F2F]">
+              <span
+                onClick={() => route.push("/profile")}
+                className={`${fonts.clash.className} h-[40px] w-[40px] bg-gradient-to-r text-[10px] flex justify-center items-center font-semibold from-[#7B61FF] to-[#FF6F91] bg-clip-text text-transparent`}
+              >
+                MVN.
+              </span>
+            </div>
+          )}
         </div>
       )}
     </div>
