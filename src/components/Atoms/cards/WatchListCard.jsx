@@ -3,6 +3,7 @@ import { fonts } from "@/fonts/fonts";
 import clsx from "clsx";
 import Image from "next/image";
 import MoreButton from "@/components/Atoms/buttons/MoreButton";
+import CardSkeleton from "@/components/Skeletons/CardSkeleton";
 
 const WatchListCard = ({
   data,
@@ -10,13 +11,18 @@ const WatchListCard = ({
   onClickDelete,
   isDeletingWatchlistPending,
   layout = "carousel", // "carousel" atau "layoutfull"
+  isLoading,
 }) => {
-  const name = data?.name || "Untitled Watchlist";
-  const moviesCount = data?.total_movie || 0;
-  const seriesCount = data?.total_series || 0;
+  const name = data?.name
+  const moviesCount = data?.total_movie 
+  const seriesCount = data?.total_series
   const imagePath = data?.picture_path;
 
   const isCarousel = layout === "carousel";
+
+  if (isLoading) {
+    return <CardSkeleton layout={layout} />;
+  }
 
   return (
     <div
