@@ -1,10 +1,8 @@
-import React from "react";
-import RateButton from "../buttons/RateButton";
+import React, { useState } from "react";
 import Image from "next/image";
+import clsx from "clsx";
 import { fonts } from "@/fonts/fonts";
 import CardSkeleton from "@/components/Skeletons/CardSkeleton";
-import clsx from "clsx";
-import AddFavButton from "../buttons/AddFavButton";
 
 const Card = ({
   filmName,
@@ -13,11 +11,19 @@ const Card = ({
   isLoading,
   onClick,
   layout = "default",
-  type,
 }) => {
+  const [imageError, setImageError] = useState(false);
+
   if (isLoading) {
     return <CardSkeleton layout={layout} />;
   }
+
+  const hasValidImage =
+    filmImages &&
+    filmImages !== "null" &&
+    !filmImages.includes("/null") &&
+    !filmImages.includes("/undefined") &&
+    !imageError;
 
   const isLayoutFull = layout === "layoutfull";
 
@@ -25,56 +31,44 @@ const Card = ({
     <div
       onClick={onClick}
       className={clsx(
-        "flex flex-col relative gap-[11px]  group cursor-pointer",
+        "flex flex-col gap-[11px] cursor-pointer shrink-0",
         isLayoutFull ? "w-full" : "w-[270px]"
       )}
     >
-      {/* <div className=" absolute right-2 top-2 bg  z-10 ">
-        <AddFavButton
-          onCard={true}
-          type={type}
-          tmdbMovieId={tmdbMovieId}
-          name={filmName}
-          posterPath={filmImages}
-          dateRelease={filmReleaseDate}
-        />
-      </div> */}
-      {/* IMAGE */}
-      <div
-        className={clsx(
-          "relative rounded-[12px] overflow-hidden",
-          isLayoutFull ? "w-full aspect-[27/38]" : "w-[270px] h-[380px]"
-        )}
-      >
-        <Image
-          src={filmImages}
-          alt="MovieImages"
-          fill={isLayoutFull}
-          width={!isLayoutFull ? 270 : undefined}
-          height={!isLayoutFull ? 380 : undefined}
-          sizes={
-            isLayoutFull
-              ? "(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-              : "270px"
-          }
-          priority={isLayoutFull} // ✅ INI
-          loading={isLayoutFull ? "eager" : "lazy"} // ✅
-          className="object-cover transition-all duration-300 w-full h-full"
-        />
+      <div className="relative w-full overflow-hidden rounded-[12px] bg-[#0D0D0D]">
+        <div className="pt-[140.7%]" />
 
-        <div className="absolute rounded-[12px]  inset-0 bg-transparent group-hover:bg-[#2A2A2A66]/40 transition-all duration-300" />
+        {hasValidImage ? (
+          <Image
+            src={filmImages}
+            alt="MovieImages"
+            fill
+            className="object-cover"
+            onError={() => setImageError(true)}
+            sizes="auto"
+            loading="eager"
+          />
+        ) : (
+          <div className="absolute inset-0 flex items-center justify-center">
+            <span
+              className={`${fonts.clash.className} text-[32px] font-semibold bg-gradient-to-r from-[#7B61FF] to-[#FF6F91] bg-clip-text text-transparent`}
+            >
+              MVN.
+            </span>
+          </div>
+        )}
+
+        <div className="absolute inset-0 bg-transparent hover:bg-[#2A2A2A66]/40 transition-all duration-300" />
       </div>
 
-      <div className="flex flex-col min-h-[120px] transition-all duration-300 group-hover:text-[#7B61FF]">
-        <RateButton rateNumber={75} clickable={false} />
-
+      {/* TEXT */}
+      <div className="min-h-[120px]">
         <h1
           className={`${fonts.clash.className} font-semibold text-[24px] line-clamp-1`}
         >
           {filmName}
         </h1>
-
-        <p className={`${fonts.hanken.className}`}>{filmReleaseDate}</p>
+        <p>{filmReleaseDate}</p>
       </div>
     </div>
   );
