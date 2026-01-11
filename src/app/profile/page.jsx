@@ -6,12 +6,15 @@ import ahay from "../../../public/avatar-image.png";
 import Image from "next/image";
 import UlasanProfileLayout from "@/components/Molecules/layouts/UlasanProfileLayout";
 import WatchlistCarouselLayout from "@/components/Molecules/carouselLayout/WatchlistCarouselLayout";
-import { Settings } from "lucide-react";
+import { Settings, LogOut } from "lucide-react";
 import { fonts } from "@/fonts/fonts";
 import { Button } from "@/components/ui/button";
 import FavoriteCarouselLayout from "@/components/Molecules/carouselLayout/FavoriteCarouselLayout";
 import { useRoot } from "@/provider/rootProvider";
 import UpdateProfileButton from "@/components/Atoms/buttons/UpdateProfileButton";
+import { useSignOut } from "@/hookAPI/SUPABASE/authSchema/useSignOut";
+import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
 
 const PageContent = () => {
   const {
@@ -54,6 +57,21 @@ const PageContent = () => {
 };
 
 const Header = ({ data }) => {
+  const router = useRouter();
+  const { mutate: signOut, isPending } = useSignOut();
+
+  const handleSignOut = () => {
+    signOut(undefined, {
+      onSuccess: () => {
+        toast.success("Berhasil Keluar");
+        router.push("/");
+      },
+      onError: (error) => {
+        toast.error("Gagal Keluar: " + error.message);
+      },
+    });
+  };
+
   return (
     <div className="flex gap-6">
       <div className="w-[164px] h-[164px] flex items-center justify-center bg-[#1A1A1A] rounded-[24px] overflow-hidden">
@@ -74,8 +92,18 @@ const Header = ({ data }) => {
         )}
       </div>
 
-      <div className="flex flex-col gap-4">
-        <UpdateProfileButton />
+      <div className="flex flex-col gap-4 flex-1 ">
+        <div className="flex gap-2 items-center justify-between ">
+          <UpdateProfileButton />
+          <Button
+            className="gap-2 h-full"
+            onClick={handleSignOut}
+            disabled={isPending}
+          >
+            <LogOut size={16} />
+            {isPending ? "Keluar..." : "Keluar"}
+          </Button>
+        </div>
         {data?.bio?.trim() !== "" && <p>{data?.bio}</p>}
 
         <p>
