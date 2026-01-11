@@ -75,7 +75,7 @@ const ProfileBackground = () => {
       setCroppedImageBlob(croppedImageBlob);
       setShowCropper(false);
     } catch (e) {
-      console.error("Error cropping image:", e);
+      toast.error("Gagal memotong gambar!");
     }
   };
 
@@ -142,13 +142,11 @@ const ProfileBackground = () => {
             handleCloseDialog();
           },
           onError: (error) => {
-            console.error("Error updating cover picture:", error);
             toast.error("Gagal update cover picture!");
           },
         }
       );
     } catch (error) {
-      console.error("Error uploading image:", error);
       toast.error("Terjadi kesalahan saat upload gambar!");
     }
   };

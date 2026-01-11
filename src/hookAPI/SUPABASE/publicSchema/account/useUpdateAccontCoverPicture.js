@@ -32,7 +32,7 @@ const UpdateAccountCoverPicture = async ({ cover_picture }) => {
         await supabase.storage.from(bucketName).remove([oldFileName]);
       }
     } catch (deleteError) {
-      console.error("Error deleting old cover picture:", deleteError);
+      console.log("Error deleting old cover picture:", deleteError);
     }
   }
 

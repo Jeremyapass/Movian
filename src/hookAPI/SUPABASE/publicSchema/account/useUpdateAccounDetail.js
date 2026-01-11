@@ -39,7 +39,7 @@ const UpdateAccountDetail = async ({
           await supabase.storage.from(bucketName).remove([oldFileName]);
         }
       } catch (deleteError) {
-        console.error("Error deleting old profile picture:", deleteError);
+        console.log("Error deleting old profile picture:", deleteError);
       }
     }
   }
@@ -76,6 +76,9 @@ export const useUpdateAccountDetail = () => {
       });
       queryClient.invalidateQueries({
         queryKey: ["get-account-detail"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["get-film-review"],
       });
     },
   });
