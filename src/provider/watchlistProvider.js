@@ -8,15 +8,27 @@ const WatchlistContext = createContext();
 
 export const WatchlistProvider = ({ children }) => {
   const [currentPage, setCurrentPage] = useState(1);
+  const [privacyFilter, setPrivacyFilter] = useState("all");
 
   const { data: watchlistResponse, isLoading: isWatchlistLoading } =
     useGetWatchlist({ page: currentPage });
   const { mutate: deleteWatchlist, isPending: isDeletingWatchlistPending } =
     useDeleteWatchlist();
 
-  const getWatchlistData = watchlistResponse?.data || [];
+  const rawWatchlistData = watchlistResponse?.data || [];
+
+  // Filter watchlist based on privacy
+  const getWatchlistData = useMemo(() => {
+    if (privacyFilter === "all") return rawWatchlistData;
+    if (privacyFilter === "public")
+      return rawWatchlistData.filter((item) => item.is_public === true);
+    if (privacyFilter === "private")
+      return rawWatchlistData.filter((item) => item.is_public === false);
+    return rawWatchlistData;
+  }, [rawWatchlistData, privacyFilter]);
+
   const totalPages = watchlistResponse?.totalPages || 1;
-  const totalCount = watchlistResponse?.count || 0;
+  const totalCount = getWatchlistData.length;
 
   const handleDeleteWatchlist = (e, id) => {
     e.stopPropagation();
@@ -35,6 +47,11 @@ export const WatchlistProvider = ({ children }) => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
+  const handlePrivacyFilter = (type) => {
+    setPrivacyFilter(type);
+    setCurrentPage(1); // Reset to first page when filter changes
+  };
+
   return (
     <WatchlistContext.Provider
       value={{
@@ -42,11 +59,13 @@ export const WatchlistProvider = ({ children }) => {
         totalPages,
         totalCount,
         currentPage,
+        privacyFilter,
 
         isWatchlistLoading,
         isDeletingWatchlistPending,
         handleDeleteWatchlist,
         handlePageChange,
+        handlePrivacyFilter,
       }}
     >
       {children}

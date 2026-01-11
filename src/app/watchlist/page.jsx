@@ -11,6 +11,8 @@ const PageContent = () => {
     totalPages,
     handlePageChange,
     totalCount,
+    privacyFilter,
+    handlePrivacyFilter,
   } = useWatchlist();
 
   return (
@@ -21,6 +23,8 @@ const PageContent = () => {
       totalPages={totalPages}
       onPageChange={handlePageChange}
       totalCount={totalCount}
+      privacyFilter={privacyFilter}
+      handlePrivacyFilter={handlePrivacyFilter}
     />
   );
 };

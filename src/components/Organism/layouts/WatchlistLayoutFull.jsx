@@ -3,6 +3,7 @@ import AddWatchListButton from "@/components/Atoms/buttons/AddWatchListButton";
 import Card from "@/components/Atoms/cards/Card";
 import WatchListCard from "@/components/Atoms/cards/WatchListCard";
 import Pagination from "@/components/Atoms/Pagination";
+import PrivacyFilters from "@/components/Atoms/PrivacyFilters";
 import { fonts } from "@/fonts/fonts";
 import { useRoot } from "@/provider/rootProvider";
 import { useWatchlist } from "@/provider/watchlistProvider";
@@ -16,15 +17,19 @@ const WatchlistLayoutFull = ({
   totalPages,
   onPageChange,
   totalCount,
+  privacyFilter,
+  handlePrivacyFilter,
 }) => {
   const router = useRouter();
   const { handleDeleteWatchlist, isDeletingWatchlistPending } = useWatchlist();
 
   return (
     <div className="w-full flex flex-col gap-10">
-      <h1 className={`${fonts.clash.className} font-semibold text-4xl`}>
-        Watchlist ({totalCount || 0})
-      </h1>
+      <Header
+        totalCount={totalCount}
+        privacyFilter={privacyFilter}
+        handlePrivacyFilter={handlePrivacyFilter}
+      />
 
       <AddWatchListButton />
 
@@ -67,6 +72,21 @@ const WatchlistLayoutFull = ({
         currentPage={currentPage}
         totalPages={totalPages}
         onPageChange={onPageChange}
+      />
+    </div>
+  );
+};
+
+const Header = ({ totalCount, privacyFilter, handlePrivacyFilter }) => {
+  return (
+    <div className="text-white flex justify-between items-end">
+      <h1 className={`${fonts.clash.className} font-semibold text-4xl`}>
+        Watchlist ({totalCount || 0})
+      </h1>
+
+      <PrivacyFilters
+        filterType={privacyFilter}
+        onClick={(e) => handlePrivacyFilter(e.target.value)}
       />
     </div>
   );
