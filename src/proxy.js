@@ -16,6 +16,13 @@ export async function proxy(request) {
     pathname.startsWith(route)
   );
 
+  // Create response object to handle cookies
+  let response = NextResponse.next({
+    request: {
+      headers: request.headers,
+    },
+  });
+
   if (isProtectedRoute) {
     // Create Supabase client for server-side auth check
     const supabase = createServerClient(
@@ -27,10 +34,38 @@ export async function proxy(request) {
             return request.cookies.get(name)?.value;
           },
           set(name, value, options) {
-            // Not needed for reading session
+            request.cookies.set({
+              name,
+              value,
+              ...options,
+            });
+            response = NextResponse.next({
+              request: {
+                headers: request.headers,
+              },
+            });
+            response.cookies.set({
+              name,
+              value,
+              ...options,
+            });
           },
           remove(name, options) {
-            // Not needed for reading session
+            request.cookies.set({
+              name,
+              value: "",
+              ...options,
+            });
+            response = NextResponse.next({
+              request: {
+                headers: request.headers,
+              },
+            });
+            response.cookies.set({
+              name,
+              value: "",
+              ...options,
+            });
           },
         },
       }
@@ -50,7 +85,7 @@ export async function proxy(request) {
   }
 
   // Pass through all other requests
-  return NextResponse.next();
+  return response;
 }
 
 /**

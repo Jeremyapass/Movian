@@ -6,6 +6,7 @@ import { Eye, EyeOff } from "lucide-react";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "react-toastify";
 
 const SignUpPage = () => {
   const router = useRouter();
@@ -31,7 +32,7 @@ const SignUpPage = () => {
           router.push("/signup/verification-email");
         },
         onError: (error) => {
-          console.error("Sign-up error:", error);
+          toast.error("Email sudah terdaftar. Silakan gunakan email lain.");
         },
       }
     );
@@ -114,8 +115,8 @@ const SignUpPage = () => {
 
         {/* KONFIRMASI PASSWORD */}
         <p className="mb-3">Konfirmasi kata sandi :</p>
-        <div className="flex flex-col">
-          <div className="relative w-full mb-6">
+        <div className="flex flex-col mb-6">
+          <div className="relative w-full ">
             <input
               type={showPassword ? "text" : "password"}
               placeholder="Ulangi kata sandi"
@@ -126,6 +127,7 @@ const SignUpPage = () => {
                   value === getValues("password") || "Kata sandi tidak sama",
               })}
             />
+
             <div
               className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-gray-400 hover:text-white transition"
               onClick={togglePassword}

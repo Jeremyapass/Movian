@@ -10,6 +10,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useSignInOAuth } from "@/hookAPI/SUPABASE/authSchema/useSignInOAuth";
 import { useSignIn } from "@/hookAPI/SUPABASE/authSchema/useSignIn";
+import { toast } from "react-toastify";
 
 const SignInPage = () => {
   const route = useRouter();
@@ -33,6 +34,9 @@ const SignInPage = () => {
         onSuccess: () => {
           route.push("/");
         },
+        onError: (error) => {
+          toast.error("Email atau kata sandi salah. Silakan coba lagi.");
+        }
       }
     );
   };
