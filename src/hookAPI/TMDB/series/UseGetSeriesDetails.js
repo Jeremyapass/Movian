@@ -12,7 +12,7 @@ const getSeriesDetails = (series_id) => {
       .get(`/api/TMDB/series/get-series-detail/${id}`)
       .then((res) => res.data)
       .catch((err) => {
-        console.error(`Failed to fetch series ${id}:`, err.message);
+        console.log(`Failed to fetch series ${id}:`, err.message);
         return null; // atau handle error sesuai kebutuhan
       })
   );

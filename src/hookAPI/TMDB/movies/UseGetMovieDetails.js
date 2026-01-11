@@ -12,7 +12,7 @@ const GetMoviesDetails = (movies_id) => {
       .get(`/api/TMDB/movies/get-movies-detail/${id}`)
       .then((res) => res.data)
       .catch((err) => {
-        console.error(`Failed to fetch movie ${id}:`, err.message);
+        console.log(`Failed to fetch movie ${id}:`, err.message);
         return null; // atau handle error sesuai kebutuhan
       })
   );

@@ -24,7 +24,7 @@ export async function GET(req, context) {
       },
     });
   } catch (error) {
-    console.error("TMDB API Error:", error.message);
+    console.log("TMDB API Error:", error.message);
     return new Response(
       JSON.stringify({
         message: error.message,
