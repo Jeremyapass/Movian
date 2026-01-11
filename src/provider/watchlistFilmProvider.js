@@ -86,6 +86,7 @@ export const WatchlistFilmProvider = ({ watchlistId, children }) => {
 
         handleFilter,
         handlePageChange,
+        isPublicView: false,
       }}
     >
       {children}

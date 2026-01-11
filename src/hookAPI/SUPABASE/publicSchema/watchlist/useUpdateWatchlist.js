@@ -41,7 +41,7 @@ const UpdateWatchlist = async ({
           await supabase.storage.from(bucketName).remove([oldFileName]);
         }
       } catch (deleteError) {
-        console.error("Error deleting old watchlist image:", deleteError);
+        console.log("Error deleting old watchlist image:", deleteError);
       }
     }
   }
@@ -75,6 +75,10 @@ export const useUpdateWatchlist = () => {
       });
       queryClient.invalidateQueries({
         queryKey: ["get-account-detail"],
+      });
+      // Invalidate specific watchlist detail queries
+      queryClient.invalidateQueries({
+        predicate: (query) => query.queryKey[0] === "get-watchlist-by-id",
       });
     },
   });

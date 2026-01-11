@@ -16,6 +16,7 @@ const PageContent = () => {
     getWatchlistData,
     page,
     handlePageChange,
+    isPublicView,
   } = useWatchlistFilm();
 
   return (
@@ -27,6 +28,7 @@ const PageContent = () => {
       filterType={filterType}
       currentPage={page}
       onPageChange={handlePageChange}
+      isPublicView={isPublicView}
     />
   );
 };

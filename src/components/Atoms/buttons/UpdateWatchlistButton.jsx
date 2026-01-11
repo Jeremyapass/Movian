@@ -5,13 +5,7 @@ import {
   DialogFooter,
   DialogTitle,
 } from "@/components/ui/dialog";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import DropdownPrivacyButton from "@/components/Atoms/buttons/DropdownPrivacyButton";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { fonts } from "@/fonts/fonts";
@@ -24,7 +18,14 @@ import { useUpdateWatchlist } from "@/hookAPI/SUPABASE/publicSchema/watchlist/us
 import { supabase } from "@/lib/supabaseClient";
 import { toast } from "react-toastify";
 
-const UpdateWatchlistButton = ({ watchlistData, onClosePopover }) => {
+const UpdateWatchlistButton = ({
+  watchlistData,
+  onClosePopover,
+  variant = "ghost",
+  showIcon = true,
+  buttonText = "Edit",
+  className = "",
+}) => {
   const [open, setOpen] = useState(false);
   const [imageSrc, setImageSrc] = useState(null);
   const [croppedImage, setCroppedImage] = useState(null);
@@ -63,7 +64,9 @@ const UpdateWatchlistButton = ({ watchlistData, onClosePopover }) => {
         "image/png",
       ];
       if (!allowedTypes.includes(file.type)) {
-        toast.warning("Tipe file tidak didukung! Gunakan JPG, JPEG, WEBP, atau PNG.");
+        toast.warning(
+          "Tipe file tidak didukung! Gunakan JPG, JPEG, WEBP, atau PNG."
+        );
         return;
       }
 
@@ -91,7 +94,7 @@ const UpdateWatchlistButton = ({ watchlistData, onClosePopover }) => {
       setCroppedImageBlob(croppedImageBlob);
       setShowCropper(false);
     } catch (e) {
-      console.error("Error cropping image:", e);
+      toast.error("Gagal memotong gambar!");
     }
   };
 
@@ -167,7 +170,6 @@ const UpdateWatchlistButton = ({ watchlistData, onClosePopover }) => {
 
         pictureUrl = publicUrl;
       } catch (error) {
-        console.error("Error uploading image:", error);
         toast.error("Terjadi kesalahan saat upload gambar!");
         return;
       }
@@ -187,17 +189,29 @@ const UpdateWatchlistButton = ({ watchlistData, onClosePopover }) => {
         onClosePopover?.();
         toast.success("Watchlist berhasil diperbarui!");
       },
+      onError: (error) => {
+        toast.error(
+          "Nama watchlist sudah digunakan. Silakan gunakan nama lain."
+        );
+      },
     });
   };
 
   return (
     <>
       <Button
-        className={`${fonts.satoshi.className}  font-semibold hover:bg-[#2A2A2A]  w-full justify-start items-center gap-2`}
-        onClick={() => setOpen(true)}
+        variant={variant}
+        className={
+          className ||
+          `${fonts.satoshi.className} font-semibold hover:bg-[#2A2A2A] w-full justify-start items-center gap-2`
+        }
+        onClick={(e) => {
+          e.stopPropagation();
+          setOpen(true);
+        }}
       >
-        <Pencil size={16} />
-        Edit
+        {showIcon && <Pencil size={16} />}
+        {buttonText}
       </Button>
 
       <Dialog
@@ -322,29 +336,10 @@ const UpdateWatchlistButton = ({ watchlistData, onClosePopover }) => {
                     Privasi
                   </label>
 
-                  <DropdownMenu modal={false}>
-                    <DropdownMenuTrigger asChild>
-                      <Button
-                        className="
-                        w-fit bg-[#111111] hover:bg-[#181818] active:bg-[#1F1F1F]
-                        border border-white/5 hover:border-white/10
-                      "
-                      >
-                        {privacy ?? "Pilih Privasi"}
-                      </Button>
-                    </DropdownMenuTrigger>
-
-                    <DropdownMenuContent align="start" className="w-[160px]">
-                      <DropdownMenuGroup>
-                        <DropdownMenuItem onClick={() => setPrivacy("Public")}>
-                          Public
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => setPrivacy("Private")}>
-                          Private
-                        </DropdownMenuItem>
-                      </DropdownMenuGroup>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+                  <DropdownPrivacyButton
+                    value={privacy}
+                    onChange={setPrivacy}
+                  />
                 </div>
               </div>
             </div>

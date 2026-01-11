@@ -15,7 +15,7 @@ const GetWatchlist = async ({ watchlistId, page = 1 }) => {
   let query = supabase
     .from("watchlist")
     .select(
-      "id, name, description, is_public, show_comments, picture_path, total_movie, total_series",
+      "id, name, description, is_public, show_comments, picture_path, total_movie, total_series, created_at, updated_at, public_id",
       { count: "exact" }
     )
     .eq("user_id", user.id)

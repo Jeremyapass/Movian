@@ -5,17 +5,11 @@ import {
   DialogFooter,
   DialogTitle,
 } from "@/components/ui/dialog";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { fonts } from "@/fonts/fonts";
 import ImageCropper from "@/components/Atoms/ImageCropper";
+import DropdownPrivacyButton from "@/components/Atoms/buttons/DropdownPrivacyButton";
 import { getCroppedImg } from "@/lib/cropImage";
 import { Plus, Upload, X } from "lucide-react";
 import React, { useState, useRef } from "react";
@@ -50,7 +44,9 @@ const AddWatchListButton = () => {
         "image/png",
       ];
       if (!allowedTypes.includes(file.type)) {
-        toast.warning("Tipe file tidak didukung! Gunakan JPG, JPEG, WEBP, atau PNG.");
+        toast.warning(
+          "Tipe file tidak didukung! Gunakan JPG, JPEG, WEBP, atau PNG."
+        );
         return;
       }
 
@@ -78,7 +74,7 @@ const AddWatchListButton = () => {
       setCroppedImageBlob(croppedImageBlob);
       setShowCropper(false);
     } catch (e) {
-      console.error("Error cropping image:", e);
+      toast.error("Gagal memotong gambar!");
     }
   };
 
@@ -153,7 +149,6 @@ const AddWatchListButton = () => {
 
         pictureUrl = publicUrl;
       } catch (error) {
-        console.error("Error uploading image:", error);
         toast.error("Terjadi kesalahan saat upload gambar!");
         return;
       }
@@ -170,6 +165,11 @@ const AddWatchListButton = () => {
       onSuccess: () => {
         toast.success("Watchlist berhasil ditambahkan!");
         handleCloseDialog();
+      },
+      onError: (error) => {
+        toast.error(
+          "Nama watchlist sudah digunakan. Silakan gunakan nama lain."
+        );
       },
     });
   };
@@ -304,29 +304,10 @@ const AddWatchListButton = () => {
                     Privasi
                   </label>
 
-                  <DropdownMenu modal={false}>
-                    <DropdownMenuTrigger asChild>
-                      <Button
-                        className="
-                        w-fit bg-[#111111] hover:bg-[#181818] active:bg-[#1F1F1F]
-                        border border-white/5 hover:border-white/10
-                      "
-                      >
-                        {privacy ?? "Pilih Privasi"}
-                      </Button>
-                    </DropdownMenuTrigger>
-
-                    <DropdownMenuContent align="start" className="w-[160px]">
-                      <DropdownMenuGroup>
-                        <DropdownMenuItem onClick={() => setPrivacy("Public")}>
-                          Public
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => setPrivacy("Private")}>
-                          Private
-                        </DropdownMenuItem>
-                      </DropdownMenuGroup>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+                  <DropdownPrivacyButton
+                    value={privacy}
+                    onChange={setPrivacy}
+                  />
                 </div>
               </div>
             </div>
