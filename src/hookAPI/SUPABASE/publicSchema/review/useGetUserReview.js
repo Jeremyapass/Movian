@@ -39,5 +39,6 @@ export const useGetFilmReview = (movieId) => {
     queryKey: ["get-film-review", movieId],
     queryFn: () => GetFilmReview({ movieId }),
     enabled: !!movieId,
+    refetchOnMount: "always",
   });
 };

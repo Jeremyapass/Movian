@@ -127,7 +127,6 @@ const AddReview = ({ tmdbMovieId, filmData, media_type }) => {
           setIsWriting(false);
         },
         onError: (error) => {
-          console.error("Error adding review:", error);
           toast.error("Gagal menambahkan review. Silakan coba lagi.");
         },
       }
