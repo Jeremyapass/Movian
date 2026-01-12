@@ -5,7 +5,6 @@ import { Button } from "../ui/button";
 import SearchBar from "../Atoms/SearchBar";
 import { usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
-import ahay from "../../../public/avatar-image.png";
 import clsx from "clsx";
 import NavbarSkeleton from "../Skeletons/NavbarSkeleton";
 import { useGetAccountDetail } from "@/hookAPI/SUPABASE/publicSchema/account/useGetAccountDetail";

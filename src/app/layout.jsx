@@ -8,6 +8,9 @@ import { RootProvider } from "@/provider/rootProvider";
 export const metadata = {
   title: "Movian",
   description: "A movie discovery app",
+  icons: {
+    icon: "/MVN..svg",
+  },
 };
 
 export default function RootLayout({ children }) {
