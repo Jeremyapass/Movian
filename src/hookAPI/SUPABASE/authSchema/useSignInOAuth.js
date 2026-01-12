@@ -1,11 +1,11 @@
 import { supabase } from "@/lib/supabaseClient";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 const SignInOAuth = async () => {
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: "google",
     options: {
-      redirectTo: "http://localhost:3000", // opsional
+      redirectTo: `${window.location.origin}/auth/callback`,
     },
   });
 
@@ -15,6 +15,7 @@ const SignInOAuth = async () => {
 };
 
 export const useSignInOAuth = () => {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationKey: ["SignInOAuth"],
     mutationFn: SignInOAuth,
