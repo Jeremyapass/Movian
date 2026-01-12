@@ -1,20 +1,24 @@
 import { supabase } from "@/lib/supabaseClient";
 import { useMutation } from "@tanstack/react-query";
 
-const ResendEmail = async (email) => {
+const resendEmail = async (email) => {
   const { data, error } = await supabase.auth.resend({
     type: "signup",
-    email: email,
+    email,
+    options: {
+      emailRedirectTo: `${window.location.origin}/auth/callback`,
+    },
   });
 
   if (error) throw error;
 
+  // data hanya berisi message
   return data;
 };
 
 export const useResendEmail = () => {
   return useMutation({
     mutationKey: ["ResendEmail"],
-    mutationFn: ResendEmail,
+    mutationFn: resendEmail,
   });
 };

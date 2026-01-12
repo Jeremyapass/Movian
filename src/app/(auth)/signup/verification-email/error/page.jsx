@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import React, { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 
-const VerificationEmailPage = () => {
+const VerificationErrorPage = () => {
   const router = useRouter();
   const { mutate: resendEmailMutate } = useResendEmail();
   const [email, setEmail] = useState("");
@@ -17,7 +17,7 @@ const VerificationEmailPage = () => {
       router.push("/signup");
     } else {
       setEmail(storedEmail);
-      // Set countdown awal 15 detik saat pertama kali load
+      // ⏱️ optional: langsung set cooldown awal
       setCountdown(15);
     }
   }, [router]);
@@ -41,12 +41,15 @@ const VerificationEmailPage = () => {
       return;
     }
 
-    setCountdown(10);
+    // ⏱️ reset cooldown ke 15 detik
+    setCountdown(15);
+
     resendEmailMutate(email, {
-      onSuccess: (data) => {
+      onSuccess: () => {
         toast.success("Tautan verifikasi telah dikirim ulang ke email kamu.");
       },
       onError: (error) => {
+        console.error("Resend email error:", error);
         toast.error("Gagal mengirim ulang email. Silakan coba lagi.");
         setCountdown(0);
       },
@@ -60,13 +63,23 @@ const VerificationEmailPage = () => {
       >
         MOVIAN.
       </p>
-      <p className={`${fonts.clash.className} text-[36px] font-semibold mb-1`}>
-        Verifikasi email
+
+      <p
+        className={`${fonts.clash.className} text-[36px] font-semibold mb-1 text-red-400`}
+      >
+        Gagal verifikasi email
       </p>
-      <p className="text-[#A1A1AA] mb-6">
-        Kami sudah kirim tautan verifikasi ke{" "}
-        {email && <span className="text-white">{email}</span>}
+
+      <p className="text-[#A1A1AA] mb-6 text-center max-w-md">
+        Tautan verifikasi mungkin sudah kedaluwarsa atau tidak valid.
+        {email && (
+          <>
+            <br />
+            Email: <span className="text-white">{email}</span>
+          </>
+        )}
       </p>
+
       <div className="text-[#A1A1AA] mb-8">
         <span>Belum mendapat email? </span>
         <span
@@ -82,4 +95,4 @@ const VerificationEmailPage = () => {
   );
 };
 
-export default VerificationEmailPage;
+export default VerificationErrorPage;
