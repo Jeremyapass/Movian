@@ -24,10 +24,9 @@ export default function RootLayout({ children }) {
             <main className="flex flex-col items-center justify-center pt-[134px] px-[64px] w-full">
               <Navbar />
               {children}
+              <Footer />
             </main>
           </RootProvider>
-
-          <Footer />
         </TanstackProvider>
       </body>
     </html>
