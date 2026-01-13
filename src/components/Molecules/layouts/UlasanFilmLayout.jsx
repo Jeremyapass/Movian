@@ -10,6 +10,7 @@ import { useRoot } from "@/provider/rootProvider";
 import { useAddReview } from "@/hookAPI/SUPABASE/publicSchema/review/useAddReview";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "react-toastify";
+import { get } from "react-hook-form";
 
 const UlasanFilmLayout = ({
   tmdbMovieId,
@@ -168,13 +169,24 @@ const AddReview = ({ tmdbMovieId, filmData, media_type }) => {
   return (
     <div className="flex flex-col gap-[10px] ">
       <div className="flex gap-[10px] items-center">
-        <Image
-          className="cursor-pointer rounded-full"
-          src={ahay}
-          alt="Profile"
-          width={32}
-          height={32}
-        />
+        {getAccountDetailData?.profile_picture ? (
+          <Image
+            className="rounded-full cursor-pointer"
+            src={getAccountDetailData?.profile_picture}
+            alt="Profile"
+            width={32}
+            height={32}
+          />
+        ) : (
+          <div className="rounded-full cursor-pointer flex items-center justify-center w-[40px] h-[40px] bg-[#2F2F2F]">
+            <span
+              onClick={() => route.push("/profile")}
+              className={`${fonts.clash.className} h-[40px] w-[40px] bg-gradient-to-r text-[10px] flex justify-center items-center font-semibold from-[#7B61FF] to-[#FF6F91] bg-clip-text text-transparent`}
+            >
+              MVN.
+            </span>
+          </div>
+        )}
         <div className="flex gap-1">
           <RateButton
             rateNumber={0}
@@ -256,10 +268,12 @@ const UserReview = ({ review }) => {
   const formatTimeAgo = (dateString) => {
     const date = new Date(dateString);
     const now = new Date();
-    const diffInMs = now - date;
-    const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
 
-    if (diffInDays === 0) return "Hari ini";
+    // Hitung selisih UTC
+    const diffInMs = now.getTime() - date.getTime();
+    const diffInDays = Math.round(diffInMs / (1000 * 60 * 60 * 24));
+
+    if (diffInDays <= 0) return "Hari ini";
     if (diffInDays === 1) return "1 hari yang lalu";
     if (diffInDays < 7) return `${diffInDays} hari yang lalu`;
     if (diffInDays < 30)
@@ -269,6 +283,7 @@ const UserReview = ({ review }) => {
     return `${Math.floor(diffInDays / 365)} tahun yang lalu`;
   };
 
+  console.log("ulasan saya", review);
   return (
     <div className="flex flex-col gap-3">
       <h2 className={`${fonts.clash.className} text-xl font-semibold`}>
@@ -276,13 +291,24 @@ const UserReview = ({ review }) => {
       </h2>
       <div className="flex flex-col gap-[10px] p-4 bg-[#1A1A1A] rounded-xl">
         <div className="flex gap-[10px] items-center">
-          <Image
-            className="rounded-full cursor-pointer"
-            src={ahay}
-            alt="Profile"
-            width={32}
-            height={32}
-          />
+          {review.public_user?.profile_picture ? (
+            <Image
+              className="rounded-full cursor-pointer"
+              src={review.public_user?.profile_picture}
+              alt="Profile"
+              width={32}
+              height={32}
+            />
+          ) : (
+            <div className="rounded-full cursor-pointer flex items-center justify-center w-[40px] h-[40px] bg-[#2F2F2F]">
+              <span
+                onClick={() => route.push("/profile")}
+                className={`${fonts.clash.className} h-[40px] w-[40px] bg-gradient-to-r text-[10px] flex justify-center items-center font-semibold from-[#7B61FF] to-[#FF6F91] bg-clip-text text-transparent`}
+              >
+                MVN.
+              </span>
+            </div>
+          )}
           <span>{review.public_user?.username || "Pengguna"}</span>
         </div>
 
@@ -299,6 +325,7 @@ const UserReview = ({ review }) => {
 
 const Reviews = ({ reviews = [], hasAnyReviews = false }) => {
   const route = useRouter();
+  console.log(reviews);
 
   // If no reviews at all, show generic empty state
   if (!hasAnyReviews) {
@@ -320,10 +347,12 @@ const Reviews = ({ reviews = [], hasAnyReviews = false }) => {
   const formatTimeAgo = (dateString) => {
     const date = new Date(dateString);
     const now = new Date();
-    const diffInMs = now - date;
-    const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
 
-    if (diffInDays === 0) return "Hari ini";
+    // Hitung selisih UTC
+    const diffInMs = now.getTime() - date.getTime();
+    const diffInDays = Math.round(diffInMs / (1000 * 60 * 60 * 24));
+
+    if (diffInDays <= 0) return "Hari ini";
     if (diffInDays === 1) return "1 hari yang lalu";
     if (diffInDays < 7) return `${diffInDays} hari yang lalu`;
     if (diffInDays < 30)
@@ -344,13 +373,21 @@ const Reviews = ({ reviews = [], hasAnyReviews = false }) => {
           className="flex flex-col gap-[10px]"
         >
           <div className="flex gap-[10px] items-center">
-            <Image
-              className="rounded-full cursor-pointer"
-              src={ahay}
-              alt="Profile"
-              width={32}
-              height={32}
-            />
+            {review.public_user?.profile_picture ? (
+              <Image
+                className="rounded-full cursor-pointer"
+                src={review.public_user?.profile_picture}
+                alt="Profile"
+                width={32}
+                height={32}
+              />
+            ) : (
+              <span
+                className={`${fonts.clash.className} bg-gradient-to-r text-[32px] font-semibold from-[#7B61FF] to-[#FF6F91] bg-clip-text text-transparent`}
+              >
+                MVN.
+              </span>
+            )}
             <span>{review.public_user?.username || "Pengguna"}</span>
           </div>
 

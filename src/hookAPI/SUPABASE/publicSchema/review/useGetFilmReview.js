@@ -14,7 +14,8 @@ const GetFilmReview = async ({ movieId }) => {
       created_at,
       user_id,
       public_user (
-        username
+        username,
+        profile_picture
       )
     `
     )
