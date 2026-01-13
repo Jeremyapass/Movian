@@ -218,7 +218,11 @@ const Banner = ({ data }) => {
 
         <div className="flex flex-col gap-2 relative z-20">
           <p className="text-[16px]">
-            {current?.release_date || current?.first_air_date || "Unknown Date"}
+            {new Date(current?.release_date || current?.first_air_date).toLocaleDateString('en-US', { 
+              month: 'short', 
+              day: 'numeric', 
+              year: 'numeric' 
+            }) || "Unknown Date"}
           </p>
 
           <p className={`${fonts.clash.className} font-semibold text-[36px]`}>

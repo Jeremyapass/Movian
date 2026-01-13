@@ -27,6 +27,16 @@ const Card = ({
 
   const isLayoutFull = layout === "layoutfull";
 
+  const formatDate = (dateString) => {
+    if (!dateString) return "";
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
+  };
+
   return (
     <div
       onClick={onClick}
@@ -68,7 +78,7 @@ const Card = ({
         >
           {filmName}
         </h1>
-        <p>{filmReleaseDate}</p>
+        <p>{formatDate(filmReleaseDate)}</p>
       </div>
     </div>
   );
