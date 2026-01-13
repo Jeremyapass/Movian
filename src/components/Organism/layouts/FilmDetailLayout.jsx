@@ -331,34 +331,36 @@ const Kiri = ({ data, isLoading }) => {
 
           {data?.["watch/providers"]?.results?.ID?.flatrate == null && "-"}
 
-          {data?.["watch/providers"]?.results?.ID?.flatrate?.map(
-            (provider, index) => (
-              <div
-                key={index}
-                className="flex gap-1 text-sm items-center cursor-pointer w-fit "
-                onClick={() =>
-                  window.open(
-                    data?.["watch/providers"]?.results?.ID?.link,
-                    "_blank"
-                  )
-                }
-              >
-                <Image
-                  src={`https://image.tmdb.org/t/p/w500${provider.logo_path}`}
-                  alt={provider.provider_name}
-                  width={30}
-                  height={30}
-                  className="w-[30px] h-[30px] object-contain rounded-full"
-                />
-                <p>
-                  {provider.provider_name.length > 25
-                    ? `${provider.provider_name.slice(0, 25)}...`
-                    : provider.provider_name}
-                </p>
-                <ArrowUpRight width={15} height={15} />
-              </div>
-            )
-          )}
+          <div className="flex flex-col gap-1">
+            {data?.["watch/providers"]?.results?.ID?.flatrate?.map(
+              (provider, index) => (
+                <div
+                  key={index}
+                  className="flex gap-1 text-sm items-center cursor-pointer w-fit "
+                  onClick={() =>
+                    window.open(
+                      data?.["watch/providers"]?.results?.ID?.link,
+                      "_blank"
+                    )
+                  }
+                >
+                  <Image
+                    src={`https://image.tmdb.org/t/p/w500${provider.logo_path}`}
+                    alt={provider.provider_name}
+                    width={30}
+                    height={30}
+                    className="w-[30px] h-[30px] object-contain rounded-full"
+                  />
+                  <p>
+                    {provider.provider_name.length > 25
+                      ? `${provider.provider_name.slice(0, 25)}...`
+                      : provider.provider_name}
+                  </p>
+                  <ArrowUpRight width={15} height={15} />
+                </div>
+              )
+            )}
+          </div>
         </div>
       </div>
     </div>
