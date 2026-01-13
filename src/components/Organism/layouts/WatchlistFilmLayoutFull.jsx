@@ -167,6 +167,15 @@ const Header = ({
           )}
         </div>
 
+        {isLoading ? (
+          // Skeleton for description
+          <div className="h-5 w-48 bg-gray-700 animate-pulse rounded-md mt-2"></div>
+        ) : !isPublic && isPublicView ? (
+          "" // Jangan tampilkan deskripsi jika private & dilihat publik
+        ) : (
+          <h2 className="text-gray-400">{watchlistData?.data?.description}</h2>
+        )}
+
         {!isPublicView && (
           <Button
             variant="ghost"

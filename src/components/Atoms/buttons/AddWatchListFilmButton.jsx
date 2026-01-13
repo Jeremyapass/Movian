@@ -166,6 +166,8 @@ const AddWatchListFilmButton = ({
     }
   };
 
+  console.log(watchlistData);
+
   return (
     <>
       <Button
@@ -206,97 +208,122 @@ const AddWatchListFilmButton = ({
         <DialogContent className="max-w-sm" aria-describedby={undefined}>
           <DialogTitle>Tambahkan ke Watchlist</DialogTitle>
 
-          <div className="space-y-4 overflow-y-auto max-h-96 dark-scrollbar mt-4">
-            {(() => {
-              const watchlists = Array.isArray(watchlistData)
-                ? watchlistData
-                : watchlistData?.data || [];
+          {watchlistData?.length === 0 ? (
+            <>
+              <p className="text-sm text-muted-foreground mt-2">
+                Anda belum memiliki watchlist. Silakan buat watchlist terlebih
+                dahulu pada halaman watchlist.
+              </p>
 
-              // Section berdasarkan data asli dari database, bukan dari state selected
-              const initialSelected = getInitialSelected();
+              <DialogFooter className="flex justify-end pt-4">
+                <Button
+                  className="bg-[#7B61FF] hover:bg-[#7B61FF]/80"
+                  onClick={() => {
+                    router.push("/watchlist");
+                  }}s
+                >
+                  Tambah Watchlist
+                </Button>
+                <Button variant="ghost" onClick={handleCancel}>
+                  Tutup
+                </Button>
+              </DialogFooter>
+            </>
+          ) : (
+            <>
+              <div className="space-y-4 overflow-y-auto max-h-96 dark-scrollbar mt-4">
+                {(() => {
+                  const watchlists = Array.isArray(watchlistData)
+                    ? watchlistData
+                    : watchlistData?.data || [];
 
-              const savedIn = watchlists.filter((item) =>
-                initialSelected.some((w) => w.id === item.id)
-              );
-              const recentlyUpdated = watchlists.filter(
-                (item) => !initialSelected.some((w) => w.id === item.id)
-              );
+                  // Section berdasarkan data asli dari database, bukan dari state selected
+                  const initialSelected = getInitialSelected();
 
-              return (
-                <>
-                  {savedIn.length > 0 && (
-                    <div className="space-y-2">
-                      <h3 className="text-sm font-medium text-muted-foreground px-1">
-                        Tersimpan di
-                      </h3>
-                      {savedIn.map((item) => {
-                        const isSelected = selected.some(
-                          (w) => w.id === item.id
-                        );
-                        return (
-                          <div
-                            key={item.id}
-                            onClick={() => toggleSelect(item)}
-                            className={clsx(
-                              "cursor-pointer rounded-md px-4 py-3 transition flex items-center justify-between",
-                              isSelected
-                                ? "bg-[#7B61FF]/20 text-[#7B61FF]"
-                                : "hover:bg-muted"
-                            )}
-                          >
-                            <span>{item.name}</span>
-                            {isSelected && <Check className="w-4 h-4" />}
-                          </div>
-                        );
-                      })}
-                    </div>
-                  )}
+                  const savedIn = watchlists.filter((item) =>
+                    initialSelected.some((w) => w.id === item.id)
+                  );
+                  const recentlyUpdated = watchlists.filter(
+                    (item) => !initialSelected.some((w) => w.id === item.id)
+                  );
 
-                  {recentlyUpdated.length > 0 && (
-                    <div className="space-y-2">
-                      <h3 className="text-sm font-medium text-muted-foreground px-1">
-                        Baru Diperbarui
-                      </h3>
-                      {recentlyUpdated.map((item) => {
-                        const isSelected = selected.some(
-                          (w) => w.id === item.id
-                        );
-                        return (
-                          <div
-                            key={item.id}
-                            onClick={() => toggleSelect(item)}
-                            className={clsx(
-                              "cursor-pointer rounded-md px-4 py-3 transition flex items-center justify-between",
-                              isSelected
-                                ? "bg-[#7B61FF]/20 text-[#7B61FF]"
-                                : "hover:bg-muted"
-                            )}
-                          >
-                            <span>{item.name}</span>
-                            {isSelected && <Check className="w-4 h-4" />}
-                          </div>
-                        );
-                      })}
-                    </div>
-                  )}
-                </>
-              );
-            })()}
-          </div>
+                  return (
+                    <>
+                      {savedIn.length > 0 && (
+                        <div className="space-y-2">
+                          <h3 className="text-sm font-medium text-muted-foreground px-1">
+                            Tersimpan di
+                          </h3>
+                          {savedIn.map((item) => {
+                            const isSelected = selected.some(
+                              (w) => w.id === item.id
+                            );
+                            return (
+                              <div
+                                key={item.id}
+                                onClick={() => toggleSelect(item)}
+                                className={clsx(
+                                  "cursor-pointer rounded-md px-4 py-3 transition flex items-center justify-between",
+                                  isSelected
+                                    ? "bg-[#7B61FF]/20 text-[#7B61FF]"
+                                    : "hover:bg-muted"
+                                )}
+                              >
+                                <span>{item.name}</span>
+                                {isSelected && <Check className="w-4 h-4" />}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
 
-          <DialogFooter className="flex flex-col gap-2 pt-4 w-full">
-            <Button
-              onClick={handleDone}
-              disabled={isAdding || isDeleting}
-              className="w-fit bg-[#7B61FF] hover:bg-[#7B61FF]/80"
-            >
-              Selesai
-            </Button>
+                      {recentlyUpdated.length > 0 && (
+                        <div className="space-y-2">
+                          <h3 className="text-sm font-medium text-muted-foreground px-1">
+                            Baru Diperbarui
+                          </h3>
+                          {recentlyUpdated.map((item) => {
+                            const isSelected = selected.some(
+                              (w) => w.id === item.id
+                            );
+                            return (
+                              <div
+                                key={item.id}
+                                onClick={() => toggleSelect(item)}
+                                className={clsx(
+                                  "cursor-pointer rounded-md px-4 py-3 transition flex items-center justify-between",
+                                  isSelected
+                                    ? "bg-[#7B61FF]/20 text-[#7B61FF]"
+                                    : "hover:bg-muted"
+                                )}
+                              >
+                                <span>{item.name}</span>
+                                {isSelected && <Check className="w-4 h-4" />}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </>
+                  );
+                })()}
+              </div>
 
-            <Button variant="ghost" onClick={() => setOpen(false)}>
-              Batal
-            </Button>
-          </DialogFooter>
+              <DialogFooter className="flex flex-col gap-2 pt-4 w-full">
+                <Button
+                  onClick={handleDone}
+                  disabled={isAdding || isDeleting}
+                  className="w-fit bg-[#7B61FF] hover:bg-[#7B61FF]/80"
+                >
+                  Selesai
+                </Button>
+
+                <Button variant="ghost" onClick={() => setOpen(false)}>
+                  Batal
+                </Button>
+              </DialogFooter>
+            </>
+          )}
         </DialogContent>
       </Dialog>
     </>
