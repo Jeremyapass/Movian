@@ -11,10 +11,11 @@ export async function proxy(request) {
   // Protected routes that require authentication
   const protectedRoutes = ["/watchlist", "/profile", "/favorite"];
 
-  // Check if the current path is a protected route
-  const isProtectedRoute = protectedRoutes.some((route) =>
-    pathname.startsWith(route)
-  );
+  // Check if the current path is a protected route,
+  // but allow /public/ paths even under protected routes
+  const isProtectedRoute =
+    protectedRoutes.some((route) => pathname.startsWith(route)) &&
+    !pathname.includes("/public/");
 
   // Create response object to handle cookies
   let response = NextResponse.next({
