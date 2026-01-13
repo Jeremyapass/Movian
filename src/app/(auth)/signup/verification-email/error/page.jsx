@@ -49,7 +49,6 @@ const VerificationErrorPage = () => {
         toast.success("Tautan verifikasi telah dikirim ulang ke email kamu.");
       },
       onError: (error) => {
-        console.error("Resend email error:", error);
         toast.error("Gagal mengirim ulang email. Silakan coba lagi.");
         setCountdown(0);
       },

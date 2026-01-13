@@ -1,7 +1,6 @@
 "use client";
 
-import React, { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import React from "react";
 import Banner from "@/components/Atoms/Banner";
 import { MainProvider, useMain } from "@/provider/mainProvider";
 import CarouselLayout from "@/components/Molecules/carouselLayout/CarouselLayout";
@@ -64,38 +63,6 @@ const PageConent = () => {
 };
 
 export default function Home() {
-  const router = useRouter();
-
-  useEffect(() => {
-    // Ambil hash dari Supabase email link
-    const hash = window.location.hash; // #access_token=... atau #error=...
-    if (!hash) return;
-
-    const params = new URLSearchParams(hash.replace(/^#/, "")); // hapus #
-    const access_token = params.get("access_token");
-    const error = params.get("error");
-
-    if (error) {
-      // Redirect ke halaman error
-      const errorUrl = new URL("/signup/verification-email/error", window.location.origin);
-      params.forEach((value, key) => {
-        errorUrl.searchParams.set(key, value);
-      });
-      router.replace(errorUrl.toString());
-      return;
-    }
-
-    if (access_token) {
-      // Redirect ke auth/callback dengan membawa semua hash sebagai query params
-      const callbackUrl = new URL("/signup/verification-email/success", window.location.origin);
-      params.forEach((value, key) => {
-        callbackUrl.searchParams.set(key, value);
-      });
-      router.replace(callbackUrl.toString());
-      return;
-    }
-  }, [router]);
-
   return (
     <MainProvider>
       <PageConent />
