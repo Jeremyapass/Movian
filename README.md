@@ -5,6 +5,7 @@
 Movian adalah platform social media yang diperuntukkan bagi para film enthusiast untuk mengeksplorasi, mengelola, dan berbagi pengalaman menonton film dan series favorit mereka. Dibangun dengan Next.js 16 dan diperkuat dengan TanStack Query untuk data management yang optimal.
 
 ---
+<img width="1919" height="875" alt="image" src="https://github.com/user-attachments/assets/dcefce73-3474-493d-a6e1-d49ac440d166" />
 
 ## 📋 Table of Contents
 
@@ -332,7 +333,7 @@ Movian menggunakan Supabase sebagai database dengan schema berikut:
 
 #### Tables:
 
-- **`account`** - User profile information (avatar, cover picture, bio)
+- **`public_user`** - User profile information (avatar, cover picture, bio)
 - **`favorite`** - User's favorite movies/series
 - **`watchlist`** - User's custom watchlists
 - **`watchlist_film`** - Films in each watchlist
@@ -633,7 +634,7 @@ See [LICENSE.MD](LICENSE.MD) for full license text.
 
 - **Author:** Jeremyapass
 - **Email:** jeremyapascal@gmail.com
-- **Project Link:** [GitHub - Movian](https://github.com/yourusername/movian)
+- **Project Link:** [GitHub - Movian](https://github.com/Jeremyapass/Movian-FULLSTACK)
 
 ---
 
