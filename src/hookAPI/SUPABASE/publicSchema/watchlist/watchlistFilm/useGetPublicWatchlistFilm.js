@@ -10,7 +10,9 @@ export const GetPublicWatchlistFilm = async ({ publicId, tmdbId, page }) => {
   // First, get the watchlist by public_id
   const { data: watchlistData, error: watchlistError } = await supabase
     .from("watchlist")
-    .select("id, name, public_id, is_public, total_movie, total_series, description")
+    .select(
+      "id, name, public_id, is_public, total_movie, total_series, description"
+    )
     .eq("public_id", publicId)
     .eq("is_public", true)
     .maybeSingle();
@@ -83,5 +85,6 @@ export const useGetPublicWatchlistFilm = ({
     staleTime: 30000,
     retry: 0, // Don't retry on error (for private watchlist)
     refetchOnWindowFocus: false,
+    refetchOnMount: "always",
   });
 };

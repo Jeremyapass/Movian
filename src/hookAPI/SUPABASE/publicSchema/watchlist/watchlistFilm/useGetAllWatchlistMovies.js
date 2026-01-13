@@ -72,5 +72,6 @@ export const useGetAllWatchlistMovie = ({
     queryFn: () => GetAllWatchlistMovie({ watchlistId, page }),
     keepPreviousData: true,
     enabled,
+    refetchOnMount: "always",
   });
 };

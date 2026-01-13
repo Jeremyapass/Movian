@@ -48,5 +48,6 @@ export const useGetWatchlist = ({ watchlistId, page = 1 } = {}) => {
     queryFn: () => GetWatchlist({ watchlistId, page }),
     enabled: watchlistId === undefined || !!watchlistId,
     placeholderData: (previousData) => previousData,
+    refetchOnMount: "always",
   });
 };

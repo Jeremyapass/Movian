@@ -72,5 +72,6 @@ export const useGetAllWatchlistSeries = ({
     queryFn: () => GetAllWatchlistSeries({ watchlistId, page }),
     keepPreviousData: true,
     enabled,
+    refetchOnMount: "always",
   });
 };

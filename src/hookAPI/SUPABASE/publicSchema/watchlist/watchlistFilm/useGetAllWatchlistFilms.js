@@ -79,5 +79,6 @@ export const useGetAllWatchlistFilm = ({
     keepPreviousData: true,
     placeholderData: (previousData) => previousData,
     enabled,
+    refetchOnMount: "always",
   });
 };
