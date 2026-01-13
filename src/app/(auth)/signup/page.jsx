@@ -18,7 +18,10 @@ const SignUpPage = () => {
   } = useForm();
 
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const togglePassword = () => setShowPassword(!showPassword);
+  const toggleConfirmPassword = () =>
+    setShowConfirmPassword(!showConfirmPassword);
 
   const { mutate: signUpMutate } = useSignUp();
 
@@ -118,7 +121,7 @@ const SignUpPage = () => {
         <div className="flex flex-col mb-6">
           <div className="relative w-full ">
             <input
-              type={showPassword ? "text" : "password"}
+              type={showConfirmPassword ? "text" : "password"}
               placeholder="Ulangi kata sandi"
               className="w-full px-3 py-2 rounded-lg bg-[#1E1E1E] text-white outline-none border border-transparent focus:border-[#7B61FF] transition-all pr-10"
               {...register("confirmPassword", {
@@ -130,9 +133,9 @@ const SignUpPage = () => {
 
             <div
               className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-gray-400 hover:text-white transition"
-              onClick={togglePassword}
+              onClick={toggleConfirmPassword}
             >
-              {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+              {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
             </div>
           </div>
           {errors.confirmPassword && (
