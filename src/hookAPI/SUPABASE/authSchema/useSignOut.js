@@ -16,7 +16,7 @@ export const useSignOut = () => {
     mutationKey: ["SignOut"],
     mutationFn: SignOut,
     onSuccess: () => {
-      queryClient.clear();
+      queryClient.invalidateQueries();
     },
   });
 };

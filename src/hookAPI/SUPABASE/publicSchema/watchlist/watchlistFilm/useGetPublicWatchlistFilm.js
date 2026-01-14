@@ -82,7 +82,6 @@ export const useGetPublicWatchlistFilm = ({
     queryKey: ["get-public-watchlist-films", publicId, tmdbId, page],
     queryFn: () => GetPublicWatchlistFilm({ publicId, tmdbId, page }),
     enabled: enabled && !!publicId,
-    staleTime: 30000,
     retry: 0, // Don't retry on error (for private watchlist)
     refetchOnWindowFocus: false,
     refetchOnMount: "always",
