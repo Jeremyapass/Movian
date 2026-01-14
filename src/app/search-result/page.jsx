@@ -84,7 +84,7 @@ const PageContent = () => {
               : searchData.results.map((item, index) => {
                   const config = getMediaConfig(item);
                   const imageUrl = item.poster_path
-                    ? `https://image.tmdb.org/t/p/w500${item.poster_path}`
+                    ? `https://image.tmdb.org/t/p/w342${item.poster_path}`
                     : null;
                   return (
                     <Card

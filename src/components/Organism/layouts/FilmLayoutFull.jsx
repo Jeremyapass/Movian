@@ -42,7 +42,7 @@ const FilmLayoutFull = ({
             ))
           : data?.map((data, index) => {
               const imageUrl = data.poster_path
-                ? `https://image.tmdb.org/t/p/w500${data.poster_path}`
+                ? `https://image.tmdb.org/t/p/w342${data.poster_path}`
                 : null;
               return (
                 <Card
