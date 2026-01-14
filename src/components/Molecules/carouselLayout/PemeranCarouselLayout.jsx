@@ -105,7 +105,7 @@ const PemeranCarouselLayout = ({ data, isLoading }) => {
                 </div>
               ) : (
                 <Image
-                  src={`https://image.tmdb.org/t/p/w500${person.profile_path}`}
+                  src={`https://image.tmdb.org/t/p/w185${person.profile_path}`}
                   alt="PemeranImage"
                   width={196}
                   height={292}

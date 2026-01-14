@@ -176,7 +176,7 @@ const Banner = ({ data }) => {
         ref={bannerRef}
         className="cursor-pointer group relative px-[26px] py-[14px] h-[75vh] w-full flex flex-col justify-between rounded-3xl bg-cover bg-center bg-no-repeat overflow-hidden"
         style={{
-          backgroundImage: `url(https://image.tmdb.org/t/p/original${current.backdrop_path})`,
+          backgroundImage: `url(https://image.tmdb.org/t/p/w1280${current.backdrop_path})`,
         }}
         onMouseEnter={() => (isHovering.current = true)}
         onMouseLeave={() => (isHovering.current = false)}

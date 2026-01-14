@@ -90,7 +90,7 @@ const GambarCarouselLayout = ({ data, isLoading }) => {
             >
               <div className="relative w-[270px] h-[348px] rounded-2xl overflow-hidden">
                 <Image
-                  src={`https://image.tmdb.org/t/p/w500${poster.file_path}`}
+                  src={`https://image.tmdb.org/t/p/w342${poster.file_path}`}
                   alt="Poster"
                   fill
                   className="object-cover"

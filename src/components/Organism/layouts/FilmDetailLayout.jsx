@@ -43,7 +43,7 @@ const FilmDetailLayout = ({
           <div
             className="cursor-pointer group relative px-[26px] py-[14px] w-full flex h-[60vh] flex-col justify-between rounded-3xl bg-cover bg-center bg-no-repeat overflow-hidden"
             style={{
-              backgroundImage: `url(https://image.tmdb.org/t/p/original${data.backdrop_path})`,
+              backgroundImage: `url(https://image.tmdb.org/t/p/w1280${data.backdrop_path})`,
             }}
           />
         ) : isLoadingInitial ? (
@@ -221,7 +221,7 @@ const Kiri = ({ data, isLoading }) => {
         <div className="w-[270px] h-[348px] rounded-xl bg-[#2f2f2f] animate-pulse" />
       ) : data?.poster_path ? (
         <Image
-          src={`https://image.tmdb.org/t/p/w500${data.poster_path}`}
+          src={`https://image.tmdb.org/t/p/w342${data.poster_path}`}
           alt="SeriesImages"
           width={270}
           height={348}
@@ -300,7 +300,7 @@ const Kiri = ({ data, isLoading }) => {
               <div key={data.id} className="flex items-center gap-2">
                 {data.logo_path ? (
                   <Image
-                    src={`https://image.tmdb.org/t/p/w500${data.logo_path}`}
+                    src={`https://image.tmdb.org/t/p/w154${data.logo_path}`}
                     alt={data.name}
                     width={30}
                     height={30}
@@ -345,7 +345,7 @@ const Kiri = ({ data, isLoading }) => {
                   }
                 >
                   <Image
-                    src={`https://image.tmdb.org/t/p/w500${provider.logo_path}`}
+                    src={`https://image.tmdb.org/t/p/w154${provider.logo_path}`}
                     alt={provider.provider_name}
                     width={30}
                     height={30}

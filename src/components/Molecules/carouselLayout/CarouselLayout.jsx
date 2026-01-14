@@ -116,7 +116,7 @@ const CarouselLayout = ({
                 key={index}
                 filmName={config.name(data)}
                 filmReleaseDate={config.date(data)}
-                filmImages={`https://image.tmdb.org/t/p/w500${data.poster_path}`}
+                filmImages={`https://image.tmdb.org/t/p/w342${data.poster_path}`}
                 type={type}
                 onClick={() => route.push(config.path(data.id))}
               />
