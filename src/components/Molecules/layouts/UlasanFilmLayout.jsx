@@ -382,11 +382,14 @@ const Reviews = ({ reviews = [], hasAnyReviews = false }) => {
                 height={32}
               />
             ) : (
-              <span
-                className={`${fonts.clash.className} bg-gradient-to-r text-[32px] font-semibold from-[#7B61FF] to-[#FF6F91] bg-clip-text text-transparent`}
-              >
-                MVN.
-              </span>
+              <div className="rounded-full cursor-pointer flex items-center justify-center w-[40px] h-[40px] bg-[#2F2F2F]">
+                <span
+                  onClick={() => route.push("/profile")}
+                  className={`${fonts.clash.className} h-[40px] w-[40px] bg-gradient-to-r text-[10px] flex justify-center items-center font-semibold from-[#7B61FF] to-[#FF6F91] bg-clip-text text-transparent`}
+                >
+                  MVN.
+                </span>
+              </div>
             )}
             <span>{review.public_user?.username || "Pengguna"}</span>
           </div>
