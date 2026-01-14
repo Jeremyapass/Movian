@@ -8,7 +8,7 @@ export async function GET(req, context) {
       params: {
         api_key: process.env.API_KEY_TMDB,
         append_to_response:
-          "account_states,credits,images,recommendations,reviews,videos,watch/providers, media_type",
+          "credits,images,videos,watch/providers",
       },
     })
     .then((res) => {

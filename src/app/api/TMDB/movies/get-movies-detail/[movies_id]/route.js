@@ -10,7 +10,7 @@ export async function GET(req, context) {
         params: {
           api_key: process.env.API_KEY_TMDB,
           append_to_response:
-            "credits,videos,recommendations,images,watch/providers", // ⭐ Hapus yang tidak perlu
+            "credits,videos,images,watch/providers", // ⭐ Hapus yang tidak perlu
         },
         timeout: 5000, // ⭐ Tambah timeout 5 detik
       }
