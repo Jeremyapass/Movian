@@ -172,7 +172,7 @@ const Kanan = ({
   return (
     <div className="flex flex-col gap-5 w-full min-w-0">
       <div className="flex flex-col gap-4">
-        {isLoading ? (
+        {isLoadingReviews ? (
           <div className="flex gap-1 items-center">
             <div className="w-[48px] h-[24px] rounded-full bg-[#2f2f2f] animate-pulse" />
             <span className="text-sm">Skor rerata pengguna</span>
