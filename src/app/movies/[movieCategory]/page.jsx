@@ -45,8 +45,6 @@ const PageContent = () => {
   // TMDB API has a maximum limit of 500 pages
   const totalPages = Math.min(totalPagesMap[movieCategory] || 1, 500);
 
-  // console.log('now playing data', nowPlayingData)
-
   return (
     <FilmLayoutFull
       data={selectedData}

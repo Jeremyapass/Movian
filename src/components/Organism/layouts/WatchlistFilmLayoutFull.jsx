@@ -112,8 +112,6 @@ const Header = ({
 }) => {
   const [copied, setCopied] = useState(false);
 
-  // console.log(watchlistData);
-
   const handleShare = () => {
     const publicId = watchlistData?.data?.public_id;
     if (!publicId) {

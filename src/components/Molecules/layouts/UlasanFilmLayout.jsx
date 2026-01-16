@@ -283,7 +283,7 @@ const UserReview = ({ review }) => {
     return `${Math.floor(diffInDays / 365)} tahun yang lalu`;
   };
 
-  console.log("ulasan saya", review);
+
   return (
     <div className="flex flex-col gap-3">
       <h2 className={`${fonts.clash.className} text-xl font-semibold`}>
@@ -325,7 +325,7 @@ const UserReview = ({ review }) => {
 
 const Reviews = ({ reviews = [], hasAnyReviews = false }) => {
   const route = useRouter();
-  console.log(reviews);
+
 
   // If no reviews at all, show generic empty state
   if (!hasAnyReviews) {

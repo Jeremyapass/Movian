@@ -166,7 +166,7 @@ const AddWatchListFilmButton = ({
     }
   };
 
-  console.log(watchlistData);
+
 
   return (
     <>

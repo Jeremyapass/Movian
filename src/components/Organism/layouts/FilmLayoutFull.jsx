@@ -31,7 +31,7 @@ const FilmLayoutFull = ({
   };
   const config = mediaConfig[type];
 
-  console.log(data);
+
 
   return (
     <div className="flex w-full flex-col">
