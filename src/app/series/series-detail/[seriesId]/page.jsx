@@ -31,9 +31,9 @@ const SeriesDetailPage = () => {
         media_type="series"
         data={seriesDetailsData}
         tmdbMovieId={seriesId}
-        isLoading={
-          isSeriesDetailsLoading || isWatchlistLoading || isWatchlistFilmLoading
-        }
+        isLoadingFilmDetails={isSeriesDetailsLoading}
+        isLoadingWatchlist={isWatchlistLoading}
+        isLoadingWatchlistFilm={isWatchlistFilmLoading}
       />
     </div>
   );

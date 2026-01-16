@@ -95,6 +95,8 @@ const GambarCarouselLayout = ({ data, isLoading }) => {
                   fill
                   className="object-cover"
                   sizes="(max-width: 768px) 100vw, 270px"
+                  loading={index < 3 ? "eager" : "lazy"}
+                  priority={index < 3}
                 />
               </div>
             </div>

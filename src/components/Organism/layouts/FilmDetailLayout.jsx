@@ -1,5 +1,5 @@
 import Image from "next/image";
-import React from "react";
+import React, { Suspense } from "react";
 import ISO6391 from "iso-639-1";
 import { findFlagUrlByIso2Code } from "country-flags-svg";
 import { ArrowUpRight } from "lucide-react";
@@ -14,27 +14,32 @@ import AddWatchListFilmButton from "@/components/Atoms/buttons/AddWatchListFilmB
 import { useGetMovieCacheId } from "@/hookAPI/SUPABASE/publicSchema/movieCache/useGetMovieCacheId";
 import { useGetFilmReview } from "@/hookAPI/SUPABASE/publicSchema/review/useGetFilmReview";
 import { calculateAverageRating } from "@/lib/ratingUtils";
+import GambarCarouselLayoutSkeleton from "@/components/Skeletons/GambarLayoutSkeleton";
+import PemeranCarouselLayoutSkeleton from "@/components/Skeletons/PemeranLayoutSkeleton";
+import VideoCarouselLayoutSkeleton from "@/components/Skeletons/VideoLayoutSkeleton";
 
 const FilmDetailLayout = ({
   watchlistData,
   watchlistFilmData,
   data,
-  isLoading,
+  isLoadingFilmDetails,
+  isLoadingWatchlist,
+  isLoadingWatchlistFilm,
   media_type,
   tmdbMovieId,
 }) => {
-  // Fetch movie cache ID and reviews
   const { data: movieCacheId, isLoading: isLoadingMovieCacheId } =
     useGetMovieCacheId(tmdbMovieId);
   const { data: reviews = [], isLoading: isLoadingReviews } =
     useGetFilmReview(movieCacheId);
   const averageRating = calculateAverageRating(reviews);
 
-  // Combine loading states for initial page load (without review refetch)
-  const isLoadingInitial = isLoading || isLoadingMovieCacheId;
-
-  // For review section, include review loading state
-  const isLoadingReviewSection = isLoadingInitial || isLoadingReviews;
+  // Loading states untuk setiap bagian - lebih granular untuk performance
+  const isLoadingBasicInfo = isLoadingFilmDetails;
+  const isLoadingCast = isLoadingFilmDetails;
+  const isLoadingImages = isLoadingFilmDetails;
+  const isLoadingVideos = isLoadingFilmDetails;
+  const isLoadingReviewSection = isLoadingMovieCacheId || isLoadingReviews;
 
   return (
     <div className="flex flex-col w-full gap-3">
@@ -46,7 +51,7 @@ const FilmDetailLayout = ({
               backgroundImage: `url(https://image.tmdb.org/t/p/w1280${data.backdrop_path})`,
             }}
           />
-        ) : isLoadingInitial ? (
+        ) : isLoadingBasicInfo ? (
           // SKELETON
           <div className="relative w-full h-[60vh] rounded-3xl overflow-hidden bg-[#2f2f2f] animate-pulse" />
         ) : (
@@ -61,17 +66,22 @@ const FilmDetailLayout = ({
         )}
 
         <div className="flex gap-6 w-full">
-          <Kiri data={data} isLoading={isLoadingInitial} />
+          <Kiri data={data} isLoading={isLoadingBasicInfo} />
           <Kanan
             data={data}
-            isLoading={isLoadingInitial}
+            isLoading={isLoadingBasicInfo}
+            isLoadingCast={isLoadingCast}
+            isLoadingImages={isLoadingImages}
+            isLoadingVideos={isLoadingVideos}
+            isLoadingReviews={isLoadingReviewSection}
             media_type={media_type}
             watchlistData={watchlistData}
             watchlistFilmData={watchlistFilmData}
+            isLoadingWatchlist={isLoadingWatchlist}
+            isLoadingWatchlistFilm={isLoadingWatchlistFilm}
             tmdbMovieId={tmdbMovieId}
             reviews={reviews}
             averageRating={averageRating}
-            isLoadingReviews={isLoadingReviewSection}
           />
         </div>
       </div>
@@ -146,13 +156,18 @@ const Header = ({ data, isLoading }) => {
 const Kanan = ({
   data,
   isLoading,
+  isLoadingCast,
+  isLoadingImages,
+  isLoadingVideos,
+  isLoadingReviews,
   media_type,
   watchlistData,
   watchlistFilmData,
+  isLoadingWatchlist,
+  isLoadingWatchlistFilm,
   tmdbMovieId,
   reviews,
   averageRating,
-  isLoadingReviews,
 }) => {
   return (
     <div className="flex flex-col gap-5 w-full min-w-0">
@@ -185,21 +200,45 @@ const Kanan = ({
             watchlistFilmData={watchlistFilmData}
             filmData={data}
             media_type={media_type}
+            isLoadingWatchlist={isLoadingWatchlist}
+            isLoadingWatchlistFilm={isLoadingWatchlistFilm}
           />
         </div>
       </div>
 
       <div className="flex bg-[#1A1A1A] p-6 rounded-xl flex-col gap-4">
         <h1 className="text-xl font-semibold">Kilasan singkat</h1>
-        <p>{data?.overview}</p>
+        {isLoading ? (
+          <div className="flex flex-col gap-2">
+            <div className="h-4 w-full rounded bg-[#2f2f2f] animate-pulse" />
+            <div className="h-4 w-[90%] rounded bg-[#2f2f2f] animate-pulse" />
+            <div className="h-4 w-[95%] rounded bg-[#2f2f2f] animate-pulse" />
+          </div>
+        ) : (
+          <p>{data?.overview}</p>
+        )}
       </div>
 
-      <PemeranCarouselLayout data={data?.credits?.cast} isLoading={isLoading} />
-      <GambarCarouselLayout
-        data={data?.images?.posters}
-        isLoading={isLoading}
-      />
-      <VideoCarouselLayout data={data?.videos?.results} isLoading={isLoading} />
+      <Suspense fallback={<PemeranCarouselLayoutSkeleton />}>
+        <PemeranCarouselLayout
+          data={data?.credits?.cast}
+          isLoading={isLoadingCast}
+        />
+      </Suspense>
+
+      <Suspense fallback={<GambarCarouselLayoutSkeleton />}>
+        <GambarCarouselLayout
+          data={data?.images?.posters}
+          isLoading={isLoadingImages}
+        />
+      </Suspense>
+
+      <Suspense fallback={<VideoCarouselLayoutSkeleton />}>
+        <VideoCarouselLayout
+          data={data?.videos?.results}
+          isLoading={isLoadingVideos}
+        />
+      </Suspense>
 
       <UlasanFilmLayout
         tmdbMovieId={tmdbMovieId}
@@ -226,6 +265,8 @@ const Kiri = ({ data, isLoading }) => {
           width={270}
           height={348}
           className="object-cover transition-all duration-300 w-[270px] h-[348px] rounded-xl"
+          priority
+          loading="eager"
         />
       ) : (
         /* NO POSTER - Show MVN like watchlist */

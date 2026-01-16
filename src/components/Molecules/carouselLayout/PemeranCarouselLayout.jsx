@@ -110,7 +110,8 @@ const PemeranCarouselLayout = ({ data, isLoading }) => {
                   width={196}
                   height={292}
                   className="object-cover transition-all duration-300 w-full h-full rounded-2xl"
-                  loading="lazy"
+                  loading={index < 4 ? "eager" : "lazy"}
+                  priority={index < 4}
                 />
               )}
 
