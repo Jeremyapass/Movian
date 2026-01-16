@@ -28,12 +28,18 @@ const AddFavButton = ({
   const { getAccountDetailData } = useRoot();
   const router = useRouter();
 
+  // Check if user is logged in - untuk disable query jika belum login
+  const isLoggedIn = !!getAccountDetailData;
+
   const { data: favoriteData, isLoading: isFavoriteLoading } =
     type === "movie"
-      ? useGetAllFavoriteMovies({ tmdbId: tmdbMovieId, enabled: !!tmdbMovieId })
+      ? useGetAllFavoriteMovies({
+          tmdbId: tmdbMovieId,
+          enabled: !!tmdbMovieId && isLoggedIn, // Only fetch if logged in
+        })
       : useGetAllFavoriteSeries({
           tmdbId: tmdbMovieId,
-          enabled: !!tmdbMovieId,
+          enabled: !!tmdbMovieId && isLoggedIn, // Only fetch if logged in
         });
 
   const favorites = favoriteData?.data ?? [];
@@ -62,14 +68,14 @@ const AddFavButton = ({
   }, [serverActive, uiLoading]);
 
   useEffect(() => {
-    if (!starRef.current || uiLoading) return;
+    if (!starRef.current || uiLoading || !isLoggedIn) return;
 
     gsap.fromTo(
       starRef.current,
       { scale: 0.6, opacity: 0.5 },
       { scale: 1, opacity: 1, duration: 0.25, ease: "back.out(2)" }
     );
-  }, [uiActive, uiLoading]);
+  }, [uiActive, uiLoading, isLoggedIn]);
 
   const handleClick = (e) => {
     e.stopPropagation();

@@ -35,6 +35,9 @@ const AddWatchListFilmButton = ({
   const { getAccountDetailData } = useRoot();
   const router = useRouter();
 
+  // Check if user is logged in
+  const isLoggedIn = !!getAccountDetailData;
+
   const { mutate: addWatchlistFilmMutate, isPending: isAdding } =
     useAddWatchlistFilm();
   const { mutate: deleteWatchlistFilmMutate, isPending: isDeleting } =
@@ -166,8 +169,6 @@ const AddWatchListFilmButton = ({
     }
   };
 
-
-
   return (
     <>
       <Button
@@ -220,7 +221,8 @@ const AddWatchListFilmButton = ({
                   className="bg-[#7B61FF] hover:bg-[#7B61FF]/80"
                   onClick={() => {
                     router.push("/watchlist");
-                  }}s
+                  }}
+                  s
                 >
                   Tambah Watchlist
                 </Button>
